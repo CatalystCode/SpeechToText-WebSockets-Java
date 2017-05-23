@@ -23,8 +23,8 @@ public class Main {
         final Locale locale = new Locale("en-US");
         final InputStream wavStream = new BufferedInputStream(new FileInputStream(args[0]));
 
-        CountDownLatch countDownLatch = new CountDownLatch(1);
-        MessageHandler handler = new MessageHandler(countDownLatch);
+        CountDownLatch socketCloseLatch = new CountDownLatch(1);
+        MessageHandler handler = new MessageHandler(socketCloseLatch);
         SpeechServiceClient client = new SpeechServiceClient(key, endpoint, format, locale, handler);
         try {
             Session session = client.start().get();
@@ -34,7 +34,7 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace(System.err);
         } finally {
-            countDownLatch.await();
+            socketCloseLatch.await();
             client.stop();
             wavStream.close();
         }

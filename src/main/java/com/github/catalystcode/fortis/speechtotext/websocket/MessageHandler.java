@@ -15,11 +15,11 @@ import java.util.concurrent.CountDownLatch;
 public class MessageHandler {
     private static final Logger log = Logger.getLogger(MessageHandler.class);
     private static final int sessionTimeout = -1;
-    private final CountDownLatch countDownLatch;
+    private final CountDownLatch socketCloseLatch;
     private Session session;
 
-    public MessageHandler(CountDownLatch countDownLatch) {
-        this.countDownLatch = countDownLatch;
+    public MessageHandler(CountDownLatch socketCloseLatch) {
+        this.socketCloseLatch = socketCloseLatch;
     }
 
     @OnWebSocketConnect
@@ -41,12 +41,12 @@ public class MessageHandler {
         }
 
         log.error("Websocket read error", error);
-        countDownLatch.countDown();
+        socketCloseLatch.countDown();
     }
 
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
         log.info("Websocket closed with status '" + statusCode + "' and reason '" + reason + "'");
-        countDownLatch.countDown();
+        socketCloseLatch.countDown();
     }
 }
