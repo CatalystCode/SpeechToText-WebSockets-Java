@@ -34,12 +34,15 @@ public class MessageSender {
 
     public void sendAudio(InputStream wavStream) throws IOException {
         byte[] buf = new byte[audioChunkSize];
+        int chunksSent = 0;
         int read;
         while ((read = wavStream.read(buf)) != -1) {
             ByteBuffer audioChunkMessage = createBinaryMessage("audio", requestId, "audio/wav", buf, read);
             remote.sendBytes(audioChunkMessage);
-            log.debug("Sent audio chunk with " + read + " bytes");
+            chunksSent++;
+            log.debug("Sent audio chunk " + chunksSent + "with " + read + " bytes");
         }
+        log.info("Sent " + chunksSent + " audio chunks");
     }
 
     private String getConfig() {
