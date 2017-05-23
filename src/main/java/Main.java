@@ -31,7 +31,6 @@ public class Main {
             MessageSender sender = new MessageSender(session.getRemote());
             sender.sendConfiguration();
             sender.sendAudio(wavStream);
-            session.close();
         } catch (Exception e) {
             e.printStackTrace(System.err);
         } finally {
