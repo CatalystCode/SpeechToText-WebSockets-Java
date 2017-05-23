@@ -4,8 +4,9 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.websocket.api.Session;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 
@@ -20,7 +21,7 @@ public class Main {
         final Endpoint endpoint = Endpoint.CONVERSATION;
         final Format format = Format.SIMPLE;
         final Locale locale = new Locale("en-US");
-        final byte[] wavBytes = Files.readAllBytes(Paths.get(args[0]));
+        final InputStream wavStream = new BufferedInputStream(new FileInputStream(args[0]));
 
         CountDownLatch countDownLatch = new CountDownLatch(1);
         MessageHandler handler = new MessageHandler(countDownLatch);
@@ -29,13 +30,14 @@ public class Main {
             Session session = client.start().get();
             MessageSender sender = new MessageSender(session.getRemote());
             sender.sendConfiguration();
-            sender.sendAudio(wavBytes);
+            sender.sendAudio(wavStream);
             session.close();
         } catch (Exception e) {
             e.printStackTrace(System.err);
         } finally {
             countDownLatch.await();
             client.stop();
+            wavStream.close();
         }
     }
 }

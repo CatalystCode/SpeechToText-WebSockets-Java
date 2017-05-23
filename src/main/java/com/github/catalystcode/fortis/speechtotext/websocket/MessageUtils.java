@@ -11,12 +11,12 @@ final class MessageUtils {
 
     private static final String crlf = "\r\n";
 
-    static ByteBuffer createBinaryMessage(String path, String requestId, String contentType, byte[] wavBytes, int offset, int length) {
+    static ByteBuffer createBinaryMessage(String path, String requestId, String contentType, byte[] wavBytes, int length) {
         byte[] header = addHeaders(new StringBuilder(), path, requestId, contentType).toString().getBytes(US_ASCII);
         ByteBuffer buf = allocate(2 + header.length + length);
         buf.putShort(toShort(header.length));
         buf.put(header);
-        buf.put(wavBytes, offset, length);
+        if (length > 0) buf.put(wavBytes, 0, length);
         return buf;
     }
 

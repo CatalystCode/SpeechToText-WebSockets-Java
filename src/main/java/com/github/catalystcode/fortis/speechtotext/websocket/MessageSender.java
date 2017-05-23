@@ -4,12 +4,12 @@ import org.apache.log4j.Logger;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 import static com.github.catalystcode.fortis.speechtotext.websocket.MessageUtils.createBinaryMessage;
 import static com.github.catalystcode.fortis.speechtotext.websocket.MessageUtils.createTextMessage;
 import static com.github.catalystcode.fortis.speechtotext.websocket.ProtocolUtils.newGuid;
-import static java.lang.Math.min;
 
 public class MessageSender {
     private static final Logger log = Logger.getLogger(MessageSender.class);
@@ -32,17 +32,14 @@ public class MessageSender {
         remote.sendString(configMessage);
     }
 
-    public void sendAudio(byte[] wavBytes) throws IOException {
-        for (int offset = 0; offset < wavBytes.length; offset += audioChunkSize) {
-            int length = min(audioChunkSize, wavBytes.length - offset);
-            ByteBuffer audioChunkMessage = createBinaryMessage("audio", requestId, "audio/wav", wavBytes, offset, length);
+    public void sendAudio(InputStream wavStream) throws IOException {
+        byte[] buf = new byte[audioChunkSize];
+        int read;
+        while ((read = wavStream.read(buf)) != -1) {
+            ByteBuffer audioChunkMessage = createBinaryMessage("audio", requestId, "audio/wav", buf, read);
             remote.sendBytes(audioChunkMessage);
-            log.debug("Sent audio chunk of " + length + " bytes starting at " + offset + " (" + (wavBytes.length - offset - length) + " left)");
+            log.debug("Sent audio chunk with " + read + " bytes");
         }
-
-        ByteBuffer audioEndMessage = createBinaryMessage("audio", requestId, "audio/wav", new byte[0], 0, 0);
-        remote.sendBytes(audioEndMessage);
-        log.debug("Sent end-of-audio marker");
     }
 
     private String getConfig() {
