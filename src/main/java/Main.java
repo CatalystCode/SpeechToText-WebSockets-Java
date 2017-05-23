@@ -13,7 +13,7 @@ import java.util.concurrent.CountDownLatch;
 public class Main {
     static {
         BasicConfigurator.configure();
-        Logger.getRootLogger().setLevel(Level.ALL);
+        Logger.getRootLogger().setLevel(Level.INFO);
     }
 
     public static void main(String[] args) throws Exception {
