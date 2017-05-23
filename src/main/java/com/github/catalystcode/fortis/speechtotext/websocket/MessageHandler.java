@@ -26,12 +26,12 @@ public class MessageHandler {
     public void onConnect(Session session) {
         session.setIdleTimeout(sessionTimeout);
         this.session = session;
-        log.info("SpeechServiceClient connected");
+        log.info("Websocket connected");
     }
 
     @OnWebSocketMessage
     public void onMessage(String message) {
-        log.debug("SpeechServiceClient got message: %s" + message);
+        log.info("Websocket got message: '" + message + "'");
     }
 
     @OnWebSocketError
@@ -40,13 +40,13 @@ public class MessageHandler {
             session.close();
         }
 
-        log.error("SpeechServiceClient read error", error);
+        log.error("Websocket read error", error);
         countDownLatch.countDown();
     }
 
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
-        log.info("SpeechServiceClient closed with status " + statusCode + " and reason " + reason);
+        log.info("Websocket closed with status '" + statusCode + "' and reason '" + reason + "'");
         countDownLatch.countDown();
     }
 }
