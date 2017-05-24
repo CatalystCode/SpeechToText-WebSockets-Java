@@ -10,7 +10,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Locale;
 
-public class Main {
+public class SpeechToTextWebsocketsDemo {
     static {
         BasicConfigurator.configure();
         Logger.getRootLogger().setLevel(Level.INFO);
