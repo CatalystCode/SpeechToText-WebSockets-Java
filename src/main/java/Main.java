@@ -1,6 +1,6 @@
 import com.github.catalystcode.fortis.speechtotext.websocket.*;
 import com.github.catalystcode.fortis.speechtotext.websocket.SpeechServiceConfig;
-import com.github.catalystcode.fortis.speechtotext.websocket.jetty.JettySpeechServiceClient;
+import com.github.catalystcode.fortis.speechtotext.websocket.nv.NvSpeechServiceClient;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -26,7 +26,7 @@ public class Main {
         SpeechServiceConfig url = new SpeechServiceConfig(key, endpoint, format, locale);
         MessageReceiver receiver = new MessageReceiver();
 
-        SpeechServiceClient client = new JettySpeechServiceClient();
+        SpeechServiceClient client = new NvSpeechServiceClient();
         try {
             MessageSender sender = client.start(url, receiver);
             sender.sendConfiguration();
