@@ -20,13 +20,16 @@ public abstract class MessageSender {
     }
 
     public final void sendConfiguration() throws IOException {
+        String config = new PlatformInfo().toJson();
+
         String configMessage = createTextMessage(
           "speech.config",
           requestId,
           "application/json; charset=utf-8",
-          getConfig());
+          config);
 
         sendTextMessage(configMessage);
+        log.info("Sent speech.config: " + config);
     }
 
     public final void sendAudio(InputStream wavStream) throws IOException {
@@ -40,27 +43,6 @@ public abstract class MessageSender {
             log.debug("Sent audio chunk " + chunksSent + "with " + read + " bytes");
         }
         log.info("Sent " + chunksSent + " audio chunks");
-    }
-
-    private String getConfig() {
-        return
-            "{" +
-            " \"context\": {" +
-            "  \"system\": {" +
-            "   \"version\": \"0.0.1\"" +
-            "  }" +
-            " }," +
-            " \"os\": {" +
-            "  \"platform\": \"Windows\"," +
-            "  \"name\": \"Windows 10\"," +
-            "  \"version\": \"15063.296\"" +
-            " }," +
-            " \"device\": {" +
-            "  \"manufacturer\": \"SpeechSample\"," +
-            "  \"model\": \"SpeechSample\"," +
-            "  \"version\": \"1.0.0000\"" +
-            " }" +
-            "}";
     }
 
     protected abstract void sendBinaryMessage(ByteBuffer message) throws IOException;
