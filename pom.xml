@@ -9,24 +9,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <jetty.version>9.4.5.v20170502</jetty.version>
     </properties>
     <dependencies>
-        <dependency>
-            <groupId>org.eclipse.jetty.websocket</groupId>
-            <artifactId>websocket-client</artifactId>
-            <version>${jetty.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty.websocket</groupId>
-            <artifactId>websocket-common</artifactId>
-            <version>${jetty.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty.websocket</groupId>
-            <artifactId>websocket-api</artifactId>
-            <version>${jetty.version}</version>
-        </dependency>
         <dependency>
             <groupId>com.neovisionaries</groupId>
             <artifactId>nv-websocket-client</artifactId>
