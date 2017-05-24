@@ -62,10 +62,10 @@ final class MessageUtils {
     }
 
     private static StringBuilder addHeaders(StringBuilder sb, String path, String requestId, String contentType) {
-        sb.append("Path: ").append(path).append(crlf);
-        sb.append("X-RequestId: ").append(requestId).append(crlf);
-        sb.append("X-Timestamp: ").append(newTimestamp()).append(crlf);
-        sb.append("Content-Type: ").append(contentType).append(crlf);
+        sb.append(Headers.Path).append(": ").append(path).append(crlf);
+        sb.append(Headers.RequestId).append(": ").append(requestId).append(crlf);
+        sb.append(Headers.Timestamp).append(": ").append(newTimestamp()).append(crlf);
+        sb.append(Headers.ContentType).append(": ").append(contentType).append(crlf);
         return sb;
     }
 

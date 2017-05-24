@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
+import static com.github.catalystcode.fortis.speechtotext.websocket.Headers.ContentType;
+import static com.github.catalystcode.fortis.speechtotext.websocket.Headers.Path;
+import static com.github.catalystcode.fortis.speechtotext.websocket.Headers.RequestId;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MessageUtilsTest {
@@ -23,9 +26,9 @@ class MessageUtilsTest {
     void parseHeaders() {
         Map<String, String> headers = MessageUtils.parseHeaders(turnStartMessage);
         assertEquals(3, headers.size());
-        assertEquals("turn.start", headers.get("Path"));
-        assertEquals("application/json; charset=utf-8", headers.get("Content-Type"));
-        assertEquals("e7a1b5d70b814aab8e5f43d9bc3fbf96", headers.get("X-RequestId"));
+        assertEquals("turn.start", headers.get(Path));
+        assertEquals("application/json; charset=utf-8", headers.get(ContentType));
+        assertEquals("e7a1b5d70b814aab8e5f43d9bc3fbf96", headers.get(RequestId));
     }
 
     @Test

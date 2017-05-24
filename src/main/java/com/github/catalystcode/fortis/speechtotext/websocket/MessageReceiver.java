@@ -5,6 +5,7 @@ import org.json.JSONObject;
 
 import java.util.Map;
 
+import static com.github.catalystcode.fortis.speechtotext.websocket.Headers.Path;
 import static com.github.catalystcode.fortis.speechtotext.websocket.MessageUtils.parseBody;
 import static com.github.catalystcode.fortis.speechtotext.websocket.MessageUtils.parseHeaders;
 
@@ -14,6 +15,6 @@ public class MessageReceiver {
     public void onMessage(String message) {
         Map<String, String> headers = parseHeaders(message);
         JSONObject body = parseBody(message);
-        log.info("Got message at path " + headers.get("Path") + " with payload '" + body + "'");
+        log.info("Got message at path " + headers.get(Path) + " with payload '" + body + "'");
     }
 }
