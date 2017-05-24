@@ -1,4 +1,5 @@
 import com.github.catalystcode.fortis.speechtotext.websocket.*;
+import com.github.catalystcode.fortis.speechtotext.websocket.SpeechServiceUrl;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -25,7 +26,8 @@ public class Main {
 
         CountDownLatch socketCloseLatch = new CountDownLatch(1);
         MessageHandler handler = new MessageHandler(socketCloseLatch);
-        SpeechServiceClient client = new SpeechServiceClient(key, endpoint, format, locale, handler);
+        SpeechServiceUrl url = new SpeechServiceUrl(key, endpoint, format, locale);
+        SpeechServiceClient client = new SpeechServiceClient(url, handler);
         try {
             Session session = client.start().get();
             MessageSender sender = new MessageSender(session.getRemote());
