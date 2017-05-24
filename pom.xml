@@ -47,10 +47,6 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <executable>maven</executable>
-                    <mainClass>Main</mainClass>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
