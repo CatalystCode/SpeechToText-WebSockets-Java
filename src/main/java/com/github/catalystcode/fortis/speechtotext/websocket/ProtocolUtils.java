@@ -1,17 +1,17 @@
 package com.github.catalystcode.fortis.speechtotext.websocket;
 
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.UUID;
+import static java.time.ZonedDateTime.now;
+import static java.time.format.DateTimeFormatter.ISO_INSTANT;
+import static java.util.UUID.randomUUID;
 
 final class ProtocolUtils {
     private ProtocolUtils() {}
 
     static String newGuid() {
-        return UUID.randomUUID().toString().replace("-", "");
+        return randomUUID().toString().replace("-", "");
     }
 
     static String newTimestamp() {
-        return ZonedDateTime.now().format(DateTimeFormatter.ISO_INSTANT);
+        return now().format(ISO_INSTANT);
     }
 }
