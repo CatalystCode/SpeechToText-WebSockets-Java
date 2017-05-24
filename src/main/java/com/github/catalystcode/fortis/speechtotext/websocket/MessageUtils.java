@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 import static com.github.catalystcode.fortis.speechtotext.websocket.ProtocolUtils.newTimestamp;
 import static java.nio.ByteBuffer.allocate;
-import static java.nio.charset.StandardCharsets.US_ASCII;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 final class MessageUtils {
     private MessageUtils() {}
@@ -12,7 +12,7 @@ final class MessageUtils {
     private static final String crlf = "\r\n";
 
     static ByteBuffer createBinaryMessage(String path, String requestId, String contentType, byte[] wavBytes, int length) {
-        byte[] header = addHeaders(new StringBuilder(), path, requestId, contentType).toString().getBytes(US_ASCII);
+        byte[] header = addHeaders(new StringBuilder(), path, requestId, contentType).toString().getBytes(UTF_8);
         ByteBuffer buf = allocate(2 + header.length + length);
         buf.putShort(toShort(header.length));
         buf.put(header);
