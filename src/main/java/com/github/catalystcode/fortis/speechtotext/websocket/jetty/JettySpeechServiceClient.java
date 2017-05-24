@@ -16,6 +16,7 @@ import java.util.concurrent.Future;
 public class JettySpeechServiceClient implements SpeechServiceClient {
     private final CountDownLatch socketCloseLatch;
     private WebSocketClient client;
+    private Session session;
 
     public JettySpeechServiceClient() {
         this.socketCloseLatch = new CountDownLatch(1);
@@ -27,13 +28,18 @@ public class JettySpeechServiceClient implements SpeechServiceClient {
         client.start();
         JettyWebsocketHandler handler = new JettyWebsocketHandler(socketCloseLatch, receiver);
         Future<Session> future = client.connect(handler, URI.create(config.getConnectionUrl()), new ClientUpgradeRequest());
-        Session session = future.get();
+        session = future.get();
         return new JettyMessageSender(session.getRemote());
     }
 
     @Override
     public void stop() throws Exception {
-        client.stop();
+        if (session != null) {
+            session.close();
+        }
+        if (client != null) {
+            client.stop();
+        }
     }
 
     @Override

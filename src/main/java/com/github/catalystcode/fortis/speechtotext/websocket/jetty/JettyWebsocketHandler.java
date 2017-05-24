@@ -15,10 +15,8 @@ import java.util.concurrent.CountDownLatch;
 @WebSocket
 public class JettyWebsocketHandler {
     private static final Logger log = Logger.getLogger(JettyWebsocketHandler.class);
-    private static final int sessionTimeout = -1;
     private final CountDownLatch socketCloseLatch;
     private final MessageReceiver receiver;
-    private Session session;
 
     JettyWebsocketHandler(CountDownLatch socketCloseLatch, MessageReceiver receiver) {
         this.socketCloseLatch = socketCloseLatch;
@@ -27,8 +25,6 @@ public class JettyWebsocketHandler {
 
     @OnWebSocketConnect
     public void onConnect(Session session) {
-        session.setIdleTimeout(sessionTimeout);
-        this.session = session;
         log.debug("Websocket connected");
     }
 
@@ -39,10 +35,6 @@ public class JettyWebsocketHandler {
 
     @OnWebSocketError
     public void onError(Throwable error) {
-        if (session != null) {
-            session.close();
-        }
-
         log.error("Websocket read error", error);
         socketCloseLatch.countDown();
     }
