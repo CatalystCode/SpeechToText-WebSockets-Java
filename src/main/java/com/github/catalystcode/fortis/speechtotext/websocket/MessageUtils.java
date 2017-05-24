@@ -1,15 +1,49 @@
 package com.github.catalystcode.fortis.speechtotext.websocket;
 
+import org.json.JSONObject;
+
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.github.catalystcode.fortis.speechtotext.websocket.ProtocolUtils.newTimestamp;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.joining;
 
 final class MessageUtils {
     private MessageUtils() {}
 
     private static final String crlf = "\r\n";
+
+    static Map<String, String> parseHeaders(String message) {
+        String[] parts = message.split(crlf + crlf);
+        if (parts.length != 2) {
+            throw new IllegalArgumentException("Message '" + message + "' does not have header and body");
+        }
+        String[] headerLines = parts[0].split(crlf);
+        Map<String, String> headers = new HashMap<>(headerLines.length);
+        for (String headerLine : headerLines) {
+            String[] headerParts = headerLine.split(":");
+            if (headerParts.length < 2) {
+                throw new IllegalArgumentException("Header '" + headerLine + "' does not have a name and value");
+            }
+            String headerName = headerParts[0].trim();
+            String headerValue = stream(headerParts).skip(1).collect(joining(":")).trim();
+            headers.put(headerName, headerValue);
+        }
+        return headers;
+    }
+
+    static JSONObject parseBody(String message) {
+        String[] parts = message.split(crlf + crlf);
+        if (parts.length != 2) {
+            throw new IllegalArgumentException("Message '" + message + "' does not have header and body");
+        }
+        String content = parts[1];
+        return new JSONObject(content);
+    }
 
     static ByteBuffer createBinaryMessage(String path, String requestId, String contentType, byte[] wavBytes, int length) {
         byte[] header = addHeaders(new StringBuilder(), path, requestId, contentType).toString().getBytes(UTF_8);
