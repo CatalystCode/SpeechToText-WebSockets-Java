@@ -9,8 +9,6 @@ import java.util.Map;
 import static com.github.catalystcode.fortis.speechtotext.websocket.ProtocolUtils.newTimestamp;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Arrays.stream;
-import static java.util.stream.Collectors.joining;
 
 final class MessageUtils {
     private MessageUtils() {}
@@ -30,7 +28,12 @@ final class MessageUtils {
                 throw new IllegalArgumentException("Header '" + headerLine + "' does not have a name and value");
             }
             String headerName = headerParts[0].trim();
-            String headerValue = stream(headerParts).skip(1).collect(joining(":")).trim();
+            StringBuilder headerValueBuilder = new StringBuilder();
+            for (int i = 1; i < headerParts.length; i++) {
+                headerValueBuilder.append(headerParts[i]).append(':');
+            }
+            headerValueBuilder.setLength(headerValueBuilder.length() - 1);
+            String headerValue = headerValueBuilder.toString().trim();
             headers.put(headerName, headerValue);
         }
         return headers;
