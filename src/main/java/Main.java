@@ -1,15 +1,14 @@
 import com.github.catalystcode.fortis.speechtotext.websocket.*;
-import com.github.catalystcode.fortis.speechtotext.websocket.SpeechServiceUrl;
+import com.github.catalystcode.fortis.speechtotext.websocket.SpeechServiceConfig;
+import com.github.catalystcode.fortis.speechtotext.websocket.jetty.JettySpeechServiceClient;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.eclipse.jetty.websocket.api.Session;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Locale;
-import java.util.concurrent.CountDownLatch;
 
 public class Main {
     static {
@@ -24,19 +23,18 @@ public class Main {
         final Locale locale = new Locale("en-US");
         final InputStream wavStream = new BufferedInputStream(new FileInputStream(args[0]));
 
-        CountDownLatch socketCloseLatch = new CountDownLatch(1);
-        MessageHandler handler = new MessageHandler(socketCloseLatch);
-        SpeechServiceUrl url = new SpeechServiceUrl(key, endpoint, format, locale);
-        SpeechServiceClient client = new SpeechServiceClient(url, handler);
+        SpeechServiceConfig url = new SpeechServiceConfig(key, endpoint, format, locale);
+        MessageReceiver receiver = new MessageReceiver();
+
+        SpeechServiceClient client = new JettySpeechServiceClient();
         try {
-            Session session = client.start().get();
-            MessageSender sender = new MessageSender(session.getRemote());
+            MessageSender sender = client.start(url, receiver);
             sender.sendConfiguration();
             sender.sendAudio(wavStream);
+            client.awaitEnd();
         } catch (Exception e) {
             e.printStackTrace(System.err);
         } finally {
-            socketCloseLatch.await();
             client.stop();
             wavStream.close();
         }

@@ -1,5 +1,6 @@
-package com.github.catalystcode.fortis.speechtotext.websocket;
+package com.github.catalystcode.fortis.speechtotext.websocket.jetty;
 
+import com.github.catalystcode.fortis.speechtotext.websocket.MessageReceiver;
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
@@ -12,26 +13,28 @@ import java.util.concurrent.CountDownLatch;
 
 @SuppressWarnings("unused")
 @WebSocket
-public class MessageHandler {
-    private static final Logger log = Logger.getLogger(MessageHandler.class);
+public class JettyWebsocketHandler {
+    private static final Logger log = Logger.getLogger(JettyWebsocketHandler.class);
     private static final int sessionTimeout = -1;
     private final CountDownLatch socketCloseLatch;
+    private final MessageReceiver receiver;
     private Session session;
 
-    public MessageHandler(CountDownLatch socketCloseLatch) {
+    JettyWebsocketHandler(CountDownLatch socketCloseLatch, MessageReceiver receiver) {
         this.socketCloseLatch = socketCloseLatch;
+        this.receiver = receiver;
     }
 
     @OnWebSocketConnect
     public void onConnect(Session session) {
         session.setIdleTimeout(sessionTimeout);
         this.session = session;
-        log.info("Websocket connected");
+        log.debug("Websocket connected");
     }
 
     @OnWebSocketMessage
     public void onMessage(String message) {
-        log.info("Websocket got message: '" + message + "'");
+        receiver.onMessage(message);
     }
 
     @OnWebSocketError

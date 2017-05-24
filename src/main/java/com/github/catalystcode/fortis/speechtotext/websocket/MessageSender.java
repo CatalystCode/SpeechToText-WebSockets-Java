@@ -1,7 +1,6 @@
 package com.github.catalystcode.fortis.speechtotext.websocket;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,34 +10,32 @@ import static com.github.catalystcode.fortis.speechtotext.websocket.MessageUtils
 import static com.github.catalystcode.fortis.speechtotext.websocket.MessageUtils.createTextMessage;
 import static com.github.catalystcode.fortis.speechtotext.websocket.ProtocolUtils.newGuid;
 
-public class MessageSender {
+public abstract class MessageSender {
     private static final Logger log = Logger.getLogger(MessageSender.class);
     private static final int audioChunkSize = 8192;
-    private final RemoteEndpoint remote;
     private final String requestId;
 
-    public MessageSender(RemoteEndpoint remote) {
-        this.remote = remote;
+    protected MessageSender() {
         this.requestId = newGuid();
     }
 
-    public void sendConfiguration() throws IOException {
+    public final void sendConfiguration() throws IOException {
         String configMessage = createTextMessage(
           "speech.config",
           requestId,
           "application/json; charset=utf-8",
           getConfig());
 
-        remote.sendString(configMessage);
+        sendTextMessage(configMessage);
     }
 
-    public void sendAudio(InputStream wavStream) throws IOException {
+    public final void sendAudio(InputStream wavStream) throws IOException {
         byte[] buf = new byte[audioChunkSize];
         int chunksSent = 0;
         int read;
         while ((read = wavStream.read(buf)) != -1) {
             ByteBuffer audioChunkMessage = createBinaryMessage("audio", requestId, "audio/wav", buf, read);
-            remote.sendBytes(audioChunkMessage);
+            sendBinaryMessage(audioChunkMessage);
             chunksSent++;
             log.debug("Sent audio chunk " + chunksSent + "with " + read + " bytes");
         }
@@ -65,4 +62,7 @@ public class MessageSender {
             " }" +
             "}";
     }
+
+    protected abstract void sendBinaryMessage(ByteBuffer message) throws IOException;
+    protected abstract void sendTextMessage(String message) throws IOException;
 }
