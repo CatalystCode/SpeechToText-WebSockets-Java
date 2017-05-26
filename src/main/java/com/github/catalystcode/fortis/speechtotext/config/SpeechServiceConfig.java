@@ -2,14 +2,15 @@ package com.github.catalystcode.fortis.speechtotext.config;
 
 import java.util.Locale;
 
+import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceConnectionHeaders.*;
 import static com.github.catalystcode.fortis.speechtotext.utils.ProtocolUtils.newGuid;
 
 public class SpeechServiceConfig {
-    private static final String host = "wss://speech.platform.bing.com";
     private final String subscriptionKey;
     private final Endpoint endpoint;
     private final Format format;
     private final Locale locale;
+    private final String host;
     private final String connectionId;
 
     public SpeechServiceConfig(String subscriptionKey, Endpoint endpoint, Format format, Locale locale) {
@@ -17,14 +18,18 @@ public class SpeechServiceConfig {
         this.endpoint = endpoint;
         this.format = format;
         this.locale = locale;
+        this.host = "wss://speech.platform.bing.com";
         this.connectionId = newGuid();
     }
 
     public String getConnectionUrl() {
-        return host + endpoint.path +
-            "?language=" + locale.toString() +
-            "&format=" + format.value +
-            "&X-ConnectionId=" + connectionId +
-            "&Ocp-Apim-Subscription-Key=" + subscriptionKey;
+        return new StringBuilder()
+            .append(host)
+            .append(endpoint.path)
+            .append('?').append(LANGUAGE).append('=').append(locale.toString())
+            .append('&').append(FORMAT).append('=').append(format.value)
+            .append('&').append(CONNECTION_ID).append('=').append(connectionId)
+            .append('&').append(SUBSCRIPTION_KEY).append('=').append(subscriptionKey)
+            .toString();
     }
 }

@@ -1,13 +1,14 @@
 package com.github.catalystcode.fortis.speechtotext.websocket;
 
+import com.github.catalystcode.fortis.speechtotext.utils.MessageUtils;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static com.github.catalystcode.fortis.speechtotext.websocket.Headers.ContentType;
-import static com.github.catalystcode.fortis.speechtotext.websocket.Headers.Path;
-import static com.github.catalystcode.fortis.speechtotext.websocket.Headers.RequestId;
+import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceMessageHeaders.CONTENT_TYPE;
+import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceMessageHeaders.PATH;
+import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceMessageHeaders.REQUEST_ID;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MessageUtilsTest {
@@ -26,9 +27,9 @@ class MessageUtilsTest {
     void parseHeaders() {
         Map<String, String> headers = MessageUtils.parseHeaders(turnStartMessage);
         assertEquals(3, headers.size());
-        assertEquals("turn.start", headers.get(Path));
-        assertEquals("application/json; charset=utf-8", headers.get(ContentType));
-        assertEquals("e7a1b5d70b814aab8e5f43d9bc3fbf96", headers.get(RequestId));
+        assertEquals("turn.start", headers.get(PATH));
+        assertEquals("application/json; charset=utf-8", headers.get(CONTENT_TYPE));
+        assertEquals("e7a1b5d70b814aab8e5f43d9bc3fbf96", headers.get(REQUEST_ID));
     }
 
     @Test

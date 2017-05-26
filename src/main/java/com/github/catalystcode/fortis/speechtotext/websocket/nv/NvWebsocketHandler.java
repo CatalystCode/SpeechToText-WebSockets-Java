@@ -1,6 +1,6 @@
 package com.github.catalystcode.fortis.speechtotext.websocket.nv;
 
-import com.github.catalystcode.fortis.speechtotext.websocket.MessageReceiver;
+import com.github.catalystcode.fortis.speechtotext.lifecycle.MessageReceiver;
 import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketAdapter;
 import com.neovisionaries.ws.client.WebSocketException;

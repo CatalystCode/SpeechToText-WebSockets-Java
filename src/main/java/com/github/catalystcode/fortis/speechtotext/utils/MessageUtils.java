@@ -1,4 +1,4 @@
-package com.github.catalystcode.fortis.speechtotext.websocket;
+package com.github.catalystcode.fortis.speechtotext.utils;
 
 import org.json.JSONObject;
 
@@ -6,21 +6,22 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceMessageHeaders.*;
 import static com.github.catalystcode.fortis.speechtotext.utils.ProtocolUtils.newTimestamp;
+import static java.lang.Short.MAX_VALUE;
+import static java.lang.Short.MIN_VALUE;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-final class MessageUtils {
+public final class MessageUtils {
     private MessageUtils() {}
 
-    private static final String crlf = "\r\n";
-
-    static Map<String, String> parseHeaders(String message) {
-        String[] parts = message.split(crlf + crlf);
+    public static Map<String, String> parseHeaders(String message) {
+        String[] parts = message.split(BODY_DELIM);
         if (parts.length != 2) {
             throw new IllegalArgumentException("Message '" + message + "' does not have header and body");
         }
-        String[] headerLines = parts[0].split(crlf);
+        String[] headerLines = parts[0].split(HEADER_DELIM);
         Map<String, String> headers = new HashMap<>(headerLines.length);
         for (String headerLine : headerLines) {
             String[] headerParts = headerLine.split(":");
@@ -39,8 +40,8 @@ final class MessageUtils {
         return headers;
     }
 
-    static JSONObject parseBody(String message) {
-        String[] parts = message.split(crlf + crlf);
+    public static JSONObject parseBody(String message) {
+        String[] parts = message.split(BODY_DELIM);
         if (parts.length != 2) {
             throw new IllegalArgumentException("Message '" + message + "' does not have header and body");
         }
@@ -48,7 +49,7 @@ final class MessageUtils {
         return new JSONObject(content);
     }
 
-    static ByteBuffer createBinaryMessage(String path, String requestId, String contentType, byte[] wavBytes, int length) {
+    public static ByteBuffer createBinaryMessage(String path, String requestId, String contentType, byte[] wavBytes, int length) {
         byte[] header = addHeaders(new StringBuilder(), path, requestId, contentType).toString().getBytes(UTF_8);
         ByteBuffer buf = allocate(2 + header.length + length);
         buf.putShort(toShort(header.length));
@@ -57,23 +58,23 @@ final class MessageUtils {
         return buf;
     }
 
-    static String createTextMessage(String path, String requestId, String contentType, String message) {
-        return addHeaders(new StringBuilder(), path, requestId, contentType).append(crlf).append(message).toString();
+    public static String createTextMessage(String path, String requestId, String contentType, String message) {
+        return addHeaders(new StringBuilder(), path, requestId, contentType).append(HEADER_DELIM).append(message).toString();
     }
 
     private static StringBuilder addHeaders(StringBuilder sb, String path, String requestId, String contentType) {
-        sb.append(Headers.Path).append(": ").append(path).append(crlf);
-        sb.append(Headers.RequestId).append(": ").append(requestId).append(crlf);
-        sb.append(Headers.Timestamp).append(": ").append(newTimestamp()).append(crlf);
-        sb.append(Headers.ContentType).append(": ").append(contentType).append(crlf);
+        sb.append(PATH).append(": ").append(path).append(HEADER_DELIM);
+        sb.append(REQUEST_ID).append(": ").append(requestId).append(HEADER_DELIM);
+        sb.append(TIMESTAMP).append(": ").append(newTimestamp()).append(HEADER_DELIM);
+        sb.append(CONTENT_TYPE).append(": ").append(contentType).append(HEADER_DELIM);
         return sb;
     }
 
     private static short toShort(int num) {
-        if (num > Short.MAX_VALUE) {
-            throw new IllegalArgumentException(num + " > " + Short.MAX_VALUE);
-        } else if (num < Short.MIN_VALUE) {
-            throw new IllegalArgumentException(num + " < " + Short.MIN_VALUE);
+        if (num > MAX_VALUE) {
+            throw new IllegalArgumentException(num + " > " + MAX_VALUE);
+        } else if (num < MIN_VALUE) {
+            throw new IllegalArgumentException(num + " < " + MIN_VALUE);
         }
 
         return (short)num;

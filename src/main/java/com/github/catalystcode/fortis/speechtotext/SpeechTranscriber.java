@@ -2,7 +2,7 @@ package com.github.catalystcode.fortis.speechtotext;
 
 import com.github.catalystcode.fortis.speechtotext.config.SpeechServiceConfig;
 import com.github.catalystcode.fortis.speechtotext.utils.Func;
-import com.github.catalystcode.fortis.speechtotext.websocket.MessageReceiver;
+import com.github.catalystcode.fortis.speechtotext.lifecycle.MessageReceiver;
 import com.github.catalystcode.fortis.speechtotext.websocket.MessageSender;
 import com.github.catalystcode.fortis.speechtotext.websocket.SpeechServiceClient;
 import com.github.catalystcode.fortis.speechtotext.websocket.nv.NvSpeechServiceClient;

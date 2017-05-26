@@ -1,6 +1,7 @@
 package com.github.catalystcode.fortis.speechtotext.websocket;
 
 import com.github.catalystcode.fortis.speechtotext.config.SpeechServiceConfig;
+import com.github.catalystcode.fortis.speechtotext.lifecycle.MessageReceiver;
 
 public interface SpeechServiceClient {
     MessageSender start(SpeechServiceConfig config, MessageReceiver receiver) throws Exception;
