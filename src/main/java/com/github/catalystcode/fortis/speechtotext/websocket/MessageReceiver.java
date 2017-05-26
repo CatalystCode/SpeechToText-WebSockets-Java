@@ -25,21 +25,22 @@ public class MessageReceiver {
         String path = headers.get(Path);
         log.info("Got message at path " + path + " with payload '" + body + "'");
 
-        switch (path) {
-            case "speech.phrase":
-                onSpeechPhrase(body);
-                break;
-            default:
-                log.warn("Unhandled message at path " + path);
+        if ("speech.phrase".equalsIgnoreCase(path)) {
+            onSpeechPhrase(body);
+        } else {
+            log.warn("Unhandled message at path " + path);
         }
     }
 
     private void onSpeechPhrase(JSONObject message) {
         String recognitionStatus = message.getString("RecognitionStatus");
 
-        if ("Success".equals(recognitionStatus)) {
-            String displayText = message.getString("DisplayText");
-            onResult.call(displayText);
+        if (!"Success".equalsIgnoreCase(recognitionStatus)) {
+            log.warn("Unable to recognize audio: " + message);
+            return;
         }
+
+        String displayText = message.getString("DisplayText");
+        onResult.call(displayText);
     }
 }
