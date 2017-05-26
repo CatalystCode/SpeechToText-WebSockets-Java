@@ -7,9 +7,6 @@ import org.json.JSONObject;
 import java.util.Map;
 
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceMessageHeaders.PATH;
-import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceMessageFields.DISPLAY_TEXT;
-import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceMessageFields.RECOGNITION_STATUS;
-import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceMessageFields.SUCCESS_STATUS;
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServicePaths.SPEECH_PHRASE;
 import static com.github.catalystcode.fortis.speechtotext.utils.MessageUtils.parseBody;
 import static com.github.catalystcode.fortis.speechtotext.utils.MessageUtils.parseHeaders;
@@ -31,21 +28,9 @@ public class MessageReceiver {
         log.info("Got message at path " + path + " with payload '" + body + "'");
 
         if (SPEECH_PHRASE.equalsIgnoreCase(path)) {
-            onSpeechPhrase(body);
+            SpeechPhraseMessage.handle(body, onResult);
         } else {
             log.warn("Unhandled message at path " + path);
         }
-    }
-
-    private void onSpeechPhrase(JSONObject message) {
-        String status = message.getString(RECOGNITION_STATUS);
-
-        if (!SUCCESS_STATUS.equalsIgnoreCase(status)) {
-            log.warn("Unable to recognize audio: " + message);
-            return;
-        }
-
-        String displayText = message.getString(DISPLAY_TEXT);
-        onResult.call(displayText);
     }
 }
