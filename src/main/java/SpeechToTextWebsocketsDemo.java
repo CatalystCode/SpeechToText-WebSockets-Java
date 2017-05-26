@@ -1,10 +1,7 @@
+import com.github.catalystcode.fortis.speechtotext.SpeechTranscriber;
 import com.github.catalystcode.fortis.speechtotext.config.Endpoint;
 import com.github.catalystcode.fortis.speechtotext.config.Format;
 import com.github.catalystcode.fortis.speechtotext.config.SpeechServiceConfig;
-import com.github.catalystcode.fortis.speechtotext.websocket.MessageReceiver;
-import com.github.catalystcode.fortis.speechtotext.websocket.MessageSender;
-import com.github.catalystcode.fortis.speechtotext.websocket.SpeechServiceClient;
-import com.github.catalystcode.fortis.speechtotext.websocket.nv.NvSpeechServiceClient;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -25,22 +22,12 @@ public class SpeechToTextWebsocketsDemo {
         final Endpoint endpoint = Endpoint.CONVERSATION;
         final Format format = Format.SIMPLE;
         final Locale locale = new Locale("en-US");
-        final InputStream wavStream = new BufferedInputStream(new FileInputStream(args[0]));
+        final String wavPath = args[0];
 
+        InputStream wavStream = new BufferedInputStream(new FileInputStream(wavPath));
         SpeechServiceConfig config = new SpeechServiceConfig(key, endpoint, format, locale);
-        MessageReceiver receiver = new MessageReceiver();
 
-        SpeechServiceClient client = new NvSpeechServiceClient();
-        try {
-            MessageSender sender = client.start(config, receiver);
-            sender.sendConfiguration();
-            sender.sendAudio(wavStream);
-            client.awaitEnd();
-        } catch (Exception e) {
-            e.printStackTrace(System.err);
-        } finally {
-            client.stop();
-            wavStream.close();
-        }
+        SpeechTranscriber transcriber = new SpeechTranscriber(config);
+        transcriber.transcribe(wavStream, transcriptionResult -> System.out.println(transcriptionResult));
     }
 }

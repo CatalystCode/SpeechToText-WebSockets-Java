@@ -1,5 +1,6 @@
 package com.github.catalystcode.fortis.speechtotext.websocket;
 
+import com.github.catalystcode.fortis.speechtotext.utils.Func;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
@@ -11,10 +12,34 @@ import static com.github.catalystcode.fortis.speechtotext.websocket.MessageUtils
 
 public class MessageReceiver {
     private static final Logger log = Logger.getLogger(MessageReceiver.class);
+    private final Func<String> onResult;
+
+    public MessageReceiver(Func<String> onResult) {
+        this.onResult = onResult;
+    }
 
     public void onMessage(String message) {
         Map<String, String> headers = parseHeaders(message);
         JSONObject body = parseBody(message);
-        log.info("Got message at path " + headers.get(Path) + " with payload '" + body + "'");
+
+        String path = headers.get(Path);
+        log.info("Got message at path " + path + " with payload '" + body + "'");
+
+        switch (path) {
+            case "speech.phrase":
+                onSpeechPhrase(body);
+                break;
+            default:
+                log.warn("Unhandled message at path " + path);
+        }
+    }
+
+    private void onSpeechPhrase(JSONObject message) {
+        String recognitionStatus = message.getString("RecognitionStatus");
+
+        if ("Success".equals(recognitionStatus)) {
+            String displayText = message.getString("DisplayText");
+            onResult.call(displayText);
+        }
     }
 }
