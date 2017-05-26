@@ -20,13 +20,10 @@ public class SpeechServiceConfig {
     }
 
     public String getConnectionUrl(String connectionId) {
-        return new StringBuilder()
-            .append(host)
-            .append(endpoint.path)
-            .append('?').append(LANGUAGE).append('=').append(locale.toString())
-            .append('&').append(FORMAT).append('=').append(format.value)
-            .append('&').append(CONNECTION_ID).append('=').append(connectionId)
-            .append('&').append(SUBSCRIPTION_KEY).append('=').append(subscriptionKey)
-            .toString();
+        return host + endpoint.path +
+            '?' + LANGUAGE + '=' + locale.toString() +
+            '&' + FORMAT + '=' + format.value +
+            '&' + CONNECTION_ID + '=' + connectionId +
+            '&' + SUBSCRIPTION_KEY + '=' + subscriptionKey;
     }
 }
