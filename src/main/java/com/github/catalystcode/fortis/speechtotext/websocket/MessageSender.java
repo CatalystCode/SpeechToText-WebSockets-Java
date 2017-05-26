@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 
 import static com.github.catalystcode.fortis.speechtotext.websocket.MessageUtils.createBinaryMessage;
 import static com.github.catalystcode.fortis.speechtotext.websocket.MessageUtils.createTextMessage;
-import static com.github.catalystcode.fortis.speechtotext.websocket.ProtocolUtils.newGuid;
+import static com.github.catalystcode.fortis.speechtotext.utils.ProtocolUtils.newGuid;
 
 public abstract class MessageSender {
     private static final Logger log = Logger.getLogger(MessageSender.class);

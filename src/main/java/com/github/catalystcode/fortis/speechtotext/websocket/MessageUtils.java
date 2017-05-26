@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.github.catalystcode.fortis.speechtotext.websocket.ProtocolUtils.newTimestamp;
+import static com.github.catalystcode.fortis.speechtotext.utils.ProtocolUtils.newTimestamp;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.charset.StandardCharsets.UTF_8;
 

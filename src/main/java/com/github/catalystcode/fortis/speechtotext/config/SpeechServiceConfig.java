@@ -1,8 +1,8 @@
-package com.github.catalystcode.fortis.speechtotext.websocket;
+package com.github.catalystcode.fortis.speechtotext.config;
 
 import java.util.Locale;
 
-import static com.github.catalystcode.fortis.speechtotext.websocket.ProtocolUtils.newGuid;
+import static com.github.catalystcode.fortis.speechtotext.utils.ProtocolUtils.newGuid;
 
 public class SpeechServiceConfig {
     private static final String host = "wss://speech.platform.bing.com";

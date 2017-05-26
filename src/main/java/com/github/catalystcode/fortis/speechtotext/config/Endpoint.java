@@ -1,4 +1,4 @@
-package com.github.catalystcode.fortis.speechtotext.websocket;
+package com.github.catalystcode.fortis.speechtotext.config;
 
 @SuppressWarnings("unused")
 public enum Endpoint {
