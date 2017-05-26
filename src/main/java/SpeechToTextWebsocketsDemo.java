@@ -28,6 +28,10 @@ public class SpeechToTextWebsocketsDemo {
         SpeechServiceConfig config = new SpeechServiceConfig(subscriptionKey, endpoint, format, locale);
 
         SpeechTranscriber transcriber = new SpeechTranscriber(config);
-        transcriber.transcribe(wavStream, System.out::println);
+        try {
+            transcriber.transcribe(wavStream, System.out::println);
+        } finally {
+            wavStream.close();
+        }
     }
 }

@@ -32,7 +32,6 @@ public class SpeechTranscriber {
             client.awaitEnd();
         } finally {
             client.stop();
-            wavStream.close();
         }
     }
 }
