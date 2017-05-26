@@ -18,14 +18,14 @@ public class SpeechToTextWebsocketsDemo {
     }
 
     public static void main(String[] args) throws Exception {
-        final String key = System.getenv("OXFORD_SPEECH_TOKEN");
+        final String subscriptionKey = System.getenv("OXFORD_SPEECH_TOKEN");
         final Endpoint endpoint = Endpoint.CONVERSATION;
         final Format format = Format.SIMPLE;
         final Locale locale = new Locale("en-US");
         final String wavPath = args[0];
 
         InputStream wavStream = new BufferedInputStream(new FileInputStream(wavPath));
-        SpeechServiceConfig config = new SpeechServiceConfig(key, endpoint, format, locale);
+        SpeechServiceConfig config = new SpeechServiceConfig(subscriptionKey, endpoint, format, locale);
 
         SpeechTranscriber transcriber = new SpeechTranscriber(config);
         transcriber.transcribe(wavStream, transcriptionResult -> System.out.println(transcriptionResult));
