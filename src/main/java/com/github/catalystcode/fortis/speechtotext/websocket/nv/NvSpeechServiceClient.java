@@ -15,8 +15,8 @@ public class NvSpeechServiceClient implements SpeechServiceClient {
     private final CountDownLatch socketCloseLatch;
     private WebSocket webSocket;
 
-    public NvSpeechServiceClient() {
-        this.socketCloseLatch = new CountDownLatch(1);
+    public NvSpeechServiceClient(CountDownLatch socketCloseLatch) {
+        this.socketCloseLatch = socketCloseLatch;
     }
 
     @Override

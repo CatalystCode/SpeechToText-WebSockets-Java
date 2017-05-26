@@ -8,22 +8,20 @@ import com.github.catalystcode.fortis.speechtotext.websocket.SpeechServiceClient
 import com.github.catalystcode.fortis.speechtotext.websocket.nv.NvSpeechServiceClient;
 
 import java.io.InputStream;
+import java.util.concurrent.CountDownLatch;
 
 public class SpeechTranscriber {
     private final SpeechServiceConfig config;
-    private final SpeechServiceClient client;
+    private final CountDownLatch endLatch;
 
     public SpeechTranscriber(SpeechServiceConfig config) {
-        this(config, new NvSpeechServiceClient());
-    }
-
-    private SpeechTranscriber(SpeechServiceConfig config, SpeechServiceClient client) {
         this.config = config;
-        this.client = client;
+        this.endLatch = new CountDownLatch(1);
     }
 
     public void transcribe(InputStream wavStream, Func<String> onResult) throws Exception {
-        MessageReceiver receiver = new MessageReceiver(onResult);
+        SpeechServiceClient client = new NvSpeechServiceClient(endLatch);
+        MessageReceiver receiver = new MessageReceiver(onResult, endLatch);
 
         try {
             MessageSender sender = client.start(config, receiver);
