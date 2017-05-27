@@ -17,7 +17,7 @@ class TelemetryInfo {
     private final String connectionId;
     private final CallsTelemetry callsTelemetry;
     private final ConnectionTelemetry connectionTelemetry;
-    private AudioTelemetry audioTelemetry;
+    private final AudioTelemetry audioTelemetry;
 
     TelemetryInfo(String connectionId, CallsTelemetry callsTelemetry, ConnectionTelemetry connectionTelemetry, AudioTelemetry audioTelemetry) {
         this.connectionId = connectionId;

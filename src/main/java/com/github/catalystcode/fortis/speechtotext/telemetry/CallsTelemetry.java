@@ -11,7 +11,7 @@ import static com.github.catalystcode.fortis.speechtotext.utils.ProtocolUtils.ne
 public final class CallsTelemetry {
     private static final ConcurrentMap<String, CallsTelemetry> POOL = new ConcurrentHashMap<>();
 
-    private ConcurrentMap<String, Queue<String>> callTimestamps = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, Queue<String>> callTimestamps = new ConcurrentHashMap<>();
 
     private CallsTelemetry() {}
 

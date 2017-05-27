@@ -1,5 +1,6 @@
 package com.github.catalystcode.fortis.speechtotext.constants;
 
+@SuppressWarnings("unused")
 public final class SpeechServiceWebsocketStatusCodes {
     private SpeechServiceWebsocketStatusCodes() {}
 

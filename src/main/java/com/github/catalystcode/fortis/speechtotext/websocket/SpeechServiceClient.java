@@ -5,6 +5,6 @@ import com.github.catalystcode.fortis.speechtotext.lifecycle.MessageReceiver;
 
 public interface SpeechServiceClient {
     MessageSender start(SpeechServiceConfig config, MessageReceiver receiver) throws Exception;
-    void stop() throws Exception;
+    void stop();
     void awaitEnd() throws InterruptedException;
 }

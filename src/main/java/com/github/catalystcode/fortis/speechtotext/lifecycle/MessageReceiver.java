@@ -6,7 +6,6 @@ import com.github.catalystcode.fortis.speechtotext.websocket.MessageSender;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
@@ -29,7 +28,7 @@ public class MessageReceiver {
         this.endLatch = endLatch;
     }
 
-    public void onMessage(String message) throws IOException {
+    public void onMessage(String message) {
         Map<String, String> headers = parseHeaders(message);
         JSONObject body = parseBody(message);
 

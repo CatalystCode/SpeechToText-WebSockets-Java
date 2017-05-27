@@ -34,7 +34,7 @@ public class NvSpeechServiceClient implements SpeechServiceClient {
     }
 
     @Override
-    public void stop() throws Exception {
+    public void stop() {
         webSocket.disconnect();
     }
 

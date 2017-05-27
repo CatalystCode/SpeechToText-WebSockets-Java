@@ -14,7 +14,7 @@ public class PlatformInfo {
         public final Device getDevice() { return new Device(); }
 
         public class System {
-            public final String getVersion() { return "0.0.1"; }
+            public final String getVersion() { return getenv("STTWS_SYSTEM_VERSION", "0.0.1"); }
         }
 
         public class Os {
@@ -24,13 +24,18 @@ public class PlatformInfo {
         }
 
         public class Device {
-            public final String getManufacturer() { return "SpeechToText-Websockets-Java"; }
-            public final String getModel() { return "SpeechToText-Websockets-Java"; }
-            public final String getVersion() { return "0.0.1"; }
+            public final String getManufacturer() { return getenv("SSTWS_DEVICE_MANUFACTURER", "SpeechToText-Websockets-Java"); }
+            public final String getModel() { return getenv("SSTWS_DEVICE_MODEL", "SpeechToText-Websockets-Java"); }
+            public final String getVersion() { return getenv("SSTWS_DEVICE_VERSION", "0.0.1"); }
         }
     }
 
     String toJson() {
         return new JSONObject(this).toString();
+    }
+
+    private static String getenv(String key, String defaultValue) {
+        String value = System.getenv(key);
+        return value != null ? value : defaultValue;
     }
 }

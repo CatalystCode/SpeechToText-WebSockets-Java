@@ -5,7 +5,6 @@ import com.github.catalystcode.fortis.speechtotext.telemetry.CallsTelemetry;
 import com.github.catalystcode.fortis.speechtotext.telemetry.ConnectionTelemetry;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
@@ -15,6 +14,7 @@ import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServic
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServicePaths.*;
 import static com.github.catalystcode.fortis.speechtotext.utils.MessageUtils.createBinaryMessage;
 import static com.github.catalystcode.fortis.speechtotext.utils.MessageUtils.createTextMessage;
+import static com.github.catalystcode.fortis.speechtotext.utils.ProtocolUtils.newGuid;
 
 public abstract class MessageSender {
     private static final Logger log = Logger.getLogger(MessageSender.class);
@@ -22,19 +22,19 @@ public abstract class MessageSender {
     private final String connectionId;
     private final String requestId;
 
-    protected MessageSender(String connectionId, String requestId) {
+    protected MessageSender(String connectionId) {
         this.connectionId = connectionId;
-        this.requestId = requestId;
+        this.requestId = newGuid();
     }
 
-    public final void sendConfiguration() throws IOException {
+    public final void sendConfiguration() {
         String config = new PlatformInfo().toJson();
         String configMessage = createTextMessage(SPEECH_CONFIG, requestId, JSON, config);
         sendTextMessage(configMessage);
         log.info("Sent speech config: " + config);
     }
 
-    public final void sendAudio(InputStream wavStream) throws IOException {
+    public final void sendAudio(InputStream wavStream) {
         AudioTelemetry audioTelemetry = AudioTelemetry.forId(requestId);
         audioTelemetry.recordAudioStarted();
         try {
@@ -52,13 +52,13 @@ public abstract class MessageSender {
             log.info("Sent " + chunksSent + " audio chunks");
         } catch (Exception ex) {
             audioTelemetry.recordAudioFailed(ex.getMessage());
-            throw ex;
+            throw new RuntimeException(ex);
         } finally {
             audioTelemetry.recordAudioEnded();
         }
     }
 
-    public final void sendTelemetry() throws IOException {
+    public final void sendTelemetry() {
         CallsTelemetry callsTelemetry = CallsTelemetry.forId(requestId);
         ConnectionTelemetry connectionTelemetry = ConnectionTelemetry.forId(connectionId);
         AudioTelemetry audioTelemetry = AudioTelemetry.forId(requestId);
@@ -68,6 +68,6 @@ public abstract class MessageSender {
         log.info("Sent telemetry: " + telemetry);
     }
 
-    protected abstract void sendBinaryMessage(ByteBuffer message) throws IOException;
-    protected abstract void sendTextMessage(String message) throws IOException;
+    protected abstract void sendBinaryMessage(ByteBuffer message);
+    protected abstract void sendTextMessage(String message);
 }
