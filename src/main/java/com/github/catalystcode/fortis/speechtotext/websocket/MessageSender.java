@@ -14,7 +14,6 @@ import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServic
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServicePaths.*;
 import static com.github.catalystcode.fortis.speechtotext.utils.MessageUtils.createBinaryMessage;
 import static com.github.catalystcode.fortis.speechtotext.utils.MessageUtils.createTextMessage;
-import static com.github.catalystcode.fortis.speechtotext.utils.ProtocolUtils.newGuid;
 
 public abstract class MessageSender {
     private static final Logger log = Logger.getLogger(MessageSender.class);

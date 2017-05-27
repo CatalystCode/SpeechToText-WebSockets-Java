@@ -1,7 +1,6 @@
 package com.github.catalystcode.fortis.speechtotext.lifecycle;
 
 import com.github.catalystcode.fortis.speechtotext.websocket.MessageSender;
-import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;

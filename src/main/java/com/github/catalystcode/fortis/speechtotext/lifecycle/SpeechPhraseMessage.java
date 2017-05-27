@@ -4,9 +4,7 @@ import com.github.catalystcode.fortis.speechtotext.utils.Func;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
-import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceMessageFields.DISPLAY_TEXT;
-import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceMessageFields.RECOGNITION_STATUS;
-import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceMessageFields.SUCCESS_STATUS;
+import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceMessageFields.*;
 
 final class SpeechPhraseMessage {
     private static final Logger log = Logger.getLogger(SpeechPhraseMessage.class);
