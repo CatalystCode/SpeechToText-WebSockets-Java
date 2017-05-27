@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Queue;
 
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceLimitations.MAX_ERROR_MESSAGE_NUM_CHARACTERS;
+import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceMetrics.*;
 
 class TelemetryInfo {
     private final String connectionId;
@@ -36,7 +37,7 @@ class TelemetryInfo {
         Collection<JSONObject> metrics = new ArrayList<>();
         metrics.add(createConnectionMetric());
         metrics.add(createMicrophoneMetric());
-        json.put("Metrics", metrics);
+        json.put(METRICS, metrics);
     }
 
     private void putReceivedMessages(JSONObject json) {
@@ -52,31 +53,31 @@ class TelemetryInfo {
             }
             receivedMessages.add(receivedMessage);
         }
-        json.put("ReceivedMessages", receivedMessages);
+        json.put(RECEIVED_MESSAGES, receivedMessages);
     }
 
     private JSONObject createConnectionMetric() {
         JSONObject metric = new JSONObject();
-        metric.put("Name", "Connection");
-        metric.put("Id", connectionId);
-        metric.put("Start", connectionTelemetry.getConnectionStarted());
-        metric.put("End", connectionTelemetry.getConnectionEstablished());
+        metric.put(NAME, CONNECTION_METRIC);
+        metric.put(ID, connectionId);
+        metric.put(START, connectionTelemetry.getConnectionStarted());
+        metric.put(END, connectionTelemetry.getConnectionEstablished());
         addError(metric, connectionTelemetry.getConnectionErrored());
         return metric;
     }
 
     private JSONObject createMicrophoneMetric() {
         JSONObject metric = new JSONObject();
-        metric.put("Name", "Microphone");
-        metric.put("Start", audioTelemetry.getAudioStarted());
-        metric.put("End", audioTelemetry.getAudioEnded());
+        metric.put(NAME, MICROPHONE_METRIC);
+        metric.put(START, audioTelemetry.getAudioStarted());
+        metric.put(END, audioTelemetry.getAudioEnded());
         addError(metric, audioTelemetry.getAudioErrored());
         return metric;
     }
 
     private void addError(JSONObject metric, String error) {
         if (error != null) {
-            metric.put("Error", error.substring(0, MAX_ERROR_MESSAGE_NUM_CHARACTERS));
+            metric.put(ERROR, error.substring(0, MAX_ERROR_MESSAGE_NUM_CHARACTERS));
         }
     }
 }
