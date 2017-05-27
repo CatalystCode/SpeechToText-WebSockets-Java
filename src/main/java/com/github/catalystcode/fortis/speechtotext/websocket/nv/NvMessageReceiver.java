@@ -14,13 +14,13 @@ import java.util.concurrent.CountDownLatch;
 
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceWebsocketStatusCodes.OK;
 
-class NvWebsocketHandler extends WebSocketAdapter {
-    private static final Logger log = Logger.getLogger(NvWebsocketHandler.class);
+class NvMessageReceiver extends WebSocketAdapter {
+    private static final Logger log = Logger.getLogger(NvMessageReceiver.class);
     private final CountDownLatch socketCloseLatch;
     private final MessageReceiver receiver;
     private final ConnectionTelemetry telemetry;
 
-    NvWebsocketHandler(CountDownLatch socketCloseLatch, MessageReceiver receiver, ConnectionTelemetry telemetry) {
+    NvMessageReceiver(CountDownLatch socketCloseLatch, MessageReceiver receiver, ConnectionTelemetry telemetry) {
         this.socketCloseLatch = socketCloseLatch;
         this.receiver = receiver;
         this.telemetry = telemetry;
