@@ -2,6 +2,7 @@ package com.github.catalystcode.fortis.speechtotext.config;
 
 import java.util.Locale;
 
+import static com.github.catalystcode.fortis.speechtotext.utils.Environment.getSpeechPlatformHost;
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceConnectionHeaders.*;
 
 public class SpeechServiceConfig {
@@ -16,7 +17,7 @@ public class SpeechServiceConfig {
         this.endpoint = endpoint;
         this.format = format;
         this.locale = locale;
-        this.host = "wss://speech.platform.bing.com";
+        this.host = getSpeechPlatformHost();
     }
 
     public String getConnectionUrl(String connectionId) {

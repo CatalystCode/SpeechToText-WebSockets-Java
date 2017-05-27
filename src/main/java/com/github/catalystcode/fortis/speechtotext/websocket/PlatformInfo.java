@@ -2,6 +2,7 @@ package com.github.catalystcode.fortis.speechtotext.websocket;
 
 import org.json.JSONObject;
 
+import static com.github.catalystcode.fortis.speechtotext.utils.Environment.*;
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceSpeechConfig.*;
 import static java.lang.System.getProperty;
 
@@ -22,7 +23,7 @@ class PlatformInfo {
 
     private JSONObject createSystem() {
         JSONObject json = new JSONObject();
-        json.put(SYSTEM_VERSION, getenv("STTWS_SYSTEM_VERSION", "0.0.1"));
+        json.put(SYSTEM_VERSION, getLibraryVersion());
         return json;
     }
 
@@ -36,14 +37,9 @@ class PlatformInfo {
 
     private JSONObject createDevice() {
         JSONObject json = new JSONObject();
-        json.put(DEVICE_MANUFACTURER, getenv("SSTWS_DEVICE_MANUFACTURER", "SpeechToText-Websockets-Java"));
-        json.put(DEVICE_MODEL, getenv("SSTWS_DEVICE_MODEL", "SpeechToText-Websockets-Java"));
-        json.put(DEVICE_VERSION, getenv("SSTWS_DEVICE_VERSION", "0.0.1"));
+        json.put(DEVICE_MANUFACTURER, getDeviceManufacturer());
+        json.put(DEVICE_MODEL, getDeviceModel());
+        json.put(DEVICE_VERSION, getDeviceVersion());
         return json;
-    }
-
-    private static String getenv(String key, String defaultValue) {
-        String value = System.getenv(key);
-        return value != null ? value : defaultValue;
     }
 }
