@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
-import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceWebsocketStatusCodes.OK;
-
 class NvMessageReceiver extends WebSocketAdapter {
     private static final Logger log = Logger.getLogger(NvMessageReceiver.class);
     private final CountDownLatch socketCloseLatch;
@@ -33,13 +31,18 @@ class NvMessageReceiver extends WebSocketAdapter {
     }
 
     @Override
+    public void onConnectError(WebSocket websocket, WebSocketException exception) throws Exception {
+        telemetry.recordConnectionFailed(exception.getMessage());
+        log.error("Websocket connection failed", exception);
+    }
+
+    @Override
     public void onTextMessage(WebSocket websocket, String text) throws Exception {
         receiver.onMessage(text);
     }
 
     @Override
     public void onError(WebSocket websocket, WebSocketException cause) throws Exception {
-        telemetry.recordConnectionFailed(cause.getMessage());
         log.error("Websocket read error", cause);
         socketCloseLatch.countDown();
     }
@@ -48,10 +51,6 @@ class NvMessageReceiver extends WebSocketAdapter {
     public void onCloseFrame(WebSocket websocket, WebSocketFrame frame) throws Exception {
         int closeCode = frame.getCloseCode();
         String closeReason = frame.getCloseReason();
-
-        if (closeCode != OK) {
-            telemetry.recordConnectionFailed(closeReason);
-        }
 
         log.info("Websocket closed with status '" + closeCode + "' and reason '" + closeReason + "'");
         socketCloseLatch.countDown();
