@@ -10,5 +10,4 @@ public final class SpeechServiceMessageHeaders {
 
     public static final String HEADER_DELIM = "\r\n";
     public static final String BODY_DELIM = "\r\n\r\n";
-
 }
