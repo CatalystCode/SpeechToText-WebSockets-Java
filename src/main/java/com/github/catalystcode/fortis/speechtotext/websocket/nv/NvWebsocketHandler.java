@@ -1,6 +1,7 @@
 package com.github.catalystcode.fortis.speechtotext.websocket.nv;
 
 import com.github.catalystcode.fortis.speechtotext.lifecycle.MessageReceiver;
+import com.github.catalystcode.fortis.speechtotext.telemetry.ConnectionTelemetry;
 import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketAdapter;
 import com.neovisionaries.ws.client.WebSocketException;
@@ -11,18 +12,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceWebsocketStatusCodes.OK;
+
 class NvWebsocketHandler extends WebSocketAdapter {
     private static final Logger log = Logger.getLogger(NvWebsocketHandler.class);
     private final CountDownLatch socketCloseLatch;
     private final MessageReceiver receiver;
+    private final ConnectionTelemetry telemetry;
 
-    NvWebsocketHandler(CountDownLatch socketCloseLatch, MessageReceiver receiver) {
+    NvWebsocketHandler(CountDownLatch socketCloseLatch, MessageReceiver receiver, ConnectionTelemetry telemetry) {
         this.socketCloseLatch = socketCloseLatch;
         this.receiver = receiver;
+        this.telemetry = telemetry;
     }
 
     @Override
     public void onConnected(WebSocket websocket, Map<String, List<String>> headers) throws Exception {
+        telemetry.recordConnectionEstablished();
         log.debug("Websocket connected");
     }
 
@@ -33,13 +39,21 @@ class NvWebsocketHandler extends WebSocketAdapter {
 
     @Override
     public void onError(WebSocket websocket, WebSocketException cause) throws Exception {
+        telemetry.recordConnectionFailed(cause.getMessage());
         log.error("Websocket read error", cause);
         socketCloseLatch.countDown();
     }
 
     @Override
     public void onCloseFrame(WebSocket websocket, WebSocketFrame frame) throws Exception {
-        log.info("Websocket closed with status '" + frame.getCloseCode() + "' and reason '" + frame.getCloseReason() + "'");
+        int closeCode = frame.getCloseCode();
+        String closeReason = frame.getCloseReason();
+
+        if (closeCode != OK) {
+            telemetry.recordConnectionFailed(closeReason);
+        }
+
+        log.info("Websocket closed with status '" + closeCode + "' and reason '" + closeReason + "'");
         socketCloseLatch.countDown();
     }
 }

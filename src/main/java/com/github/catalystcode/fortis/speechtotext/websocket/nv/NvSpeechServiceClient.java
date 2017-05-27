@@ -1,6 +1,7 @@
 package com.github.catalystcode.fortis.speechtotext.websocket.nv;
 
 import com.github.catalystcode.fortis.speechtotext.lifecycle.MessageReceiver;
+import com.github.catalystcode.fortis.speechtotext.telemetry.ConnectionTelemetry;
 import com.github.catalystcode.fortis.speechtotext.websocket.MessageSender;
 import com.github.catalystcode.fortis.speechtotext.websocket.SpeechServiceClient;
 import com.github.catalystcode.fortis.speechtotext.config.SpeechServiceConfig;
@@ -22,11 +23,14 @@ public class NvSpeechServiceClient implements SpeechServiceClient {
     @Override
     public MessageSender start(SpeechServiceConfig config, MessageReceiver receiver) throws Exception {
         String connectionId = newGuid();
+        ConnectionTelemetry telemetry = ConnectionTelemetry.forId(connectionId);
+
         WebSocketFactory factory = new WebSocketFactory();
         webSocket = factory.createSocket(config.getConnectionUrl(connectionId));
-        webSocket.addListener(new NvWebsocketHandler(socketCloseLatch, receiver));
+        webSocket.addListener(new NvWebsocketHandler(socketCloseLatch, receiver, telemetry));
         webSocket.connect();
-        return new NvMessageSender(webSocket);
+        telemetry.recordConnectionStarted();
+        return new NvMessageSender(connectionId, webSocket);
     }
 
     @Override

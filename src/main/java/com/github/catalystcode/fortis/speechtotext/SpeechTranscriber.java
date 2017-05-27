@@ -25,6 +25,7 @@ public class SpeechTranscriber {
 
         try {
             MessageSender sender = client.start(config, receiver);
+            receiver.setSender(sender);
             sender.sendConfiguration();
             sender.sendAudio(wavStream);
             client.awaitEnd();

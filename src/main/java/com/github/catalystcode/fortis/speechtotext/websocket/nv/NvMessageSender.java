@@ -9,7 +9,8 @@ import java.nio.ByteBuffer;
 class NvMessageSender extends MessageSender {
     private final WebSocket webSocket;
 
-    NvMessageSender(WebSocket webSocket) {
+    NvMessageSender(String connectionId, WebSocket webSocket) {
+        super(connectionId);
         this.webSocket = webSocket;
     }
 
