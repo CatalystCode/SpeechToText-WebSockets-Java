@@ -1,6 +1,5 @@
-package com.github.catalystcode.fortis.speechtotext.websocket;
+package com.github.catalystcode.fortis.speechtotext.utils;
 
-import com.github.catalystcode.fortis.speechtotext.utils.MessageUtils;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
@@ -9,7 +8,7 @@ import java.util.Map;
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceMessageHeaders.CONTENT_TYPE;
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceMessageHeaders.PATH;
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceMessageHeaders.REQUEST_ID;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MessageUtilsTest {
     private static final String turnStartMessage = "" +
