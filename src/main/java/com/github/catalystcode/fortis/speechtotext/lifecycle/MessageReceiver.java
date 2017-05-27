@@ -36,14 +36,12 @@ public class MessageReceiver {
         String path = headers.get(PATH);
         String requestId = headers.get(REQUEST_ID);
         CallsTelemetry.forId(requestId).recordCall(path);
-        log.info("Got message at path " + path + " with payload '" + body + "'");
+        log.debug("Got message at path " + path + " with payload '" + body + "'");
 
         if (SPEECH_PHRASE.equalsIgnoreCase(path)) {
             SpeechPhraseMessage.handle(body, onResult);
         } else if (TURN_END.equalsIgnoreCase(path)) {
             TurnEndMessage.handle(sender, endLatch);
-        } else {
-            log.warn("Unhandled message at path " + path);
         }
     }
 
