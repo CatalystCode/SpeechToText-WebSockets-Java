@@ -47,6 +47,8 @@ public abstract class MessageSender {
                 chunksSent++;
                 log.debug("Sent audio chunk " + chunksSent + "with " + read + " bytes");
             }
+            ByteBuffer audioEndMessage = createBinaryMessage(AUDIO, requestId, WAV, new byte[0], 0);
+            sendBinaryMessage(audioEndMessage);
             log.info("Sent " + chunksSent + " audio chunks");
         } catch (Exception ex) {
             audioTelemetry.recordAudioFailed(ex.getMessage());
