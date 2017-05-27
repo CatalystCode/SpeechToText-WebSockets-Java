@@ -1,5 +1,6 @@
 package com.github.catalystcode.fortis.speechtotext.websocket;
 
+import com.github.catalystcode.fortis.speechtotext.telemetry.AudioTelemetry;
 import com.github.catalystcode.fortis.speechtotext.telemetry.CallsTelemetry;
 import com.github.catalystcode.fortis.speechtotext.telemetry.ConnectionTelemetry;
 import org.apache.log4j.Logger;
@@ -34,22 +35,32 @@ public abstract class MessageSender {
     }
 
     public final void sendAudio(InputStream wavStream) throws IOException {
-        byte[] buf = new byte[MAX_BYTES_PER_AUDIO_CHUNK];
-        int chunksSent = 0;
-        int read;
-        while ((read = wavStream.read(buf)) != -1) {
-            ByteBuffer audioChunkMessage = createBinaryMessage(AUDIO, requestId, WAV, buf, read);
-            sendBinaryMessage(audioChunkMessage);
-            chunksSent++;
-            log.debug("Sent audio chunk " + chunksSent + "with " + read + " bytes");
+        AudioTelemetry audioTelemetry = AudioTelemetry.forId(requestId);
+        audioTelemetry.recordAudioStarted();
+        try {
+            byte[] buf = new byte[MAX_BYTES_PER_AUDIO_CHUNK];
+            int chunksSent = 0;
+            int read;
+            while ((read = wavStream.read(buf)) != -1) {
+                ByteBuffer audioChunkMessage = createBinaryMessage(AUDIO, requestId, WAV, buf, read);
+                sendBinaryMessage(audioChunkMessage);
+                chunksSent++;
+                log.debug("Sent audio chunk " + chunksSent + "with " + read + " bytes");
+            }
+            log.info("Sent " + chunksSent + " audio chunks");
+        } catch (Exception ex) {
+            audioTelemetry.recordAudioFailed(ex.getMessage());
+            throw ex;
+        } finally {
+            audioTelemetry.recordAudioEnded();
         }
-        log.info("Sent " + chunksSent + " audio chunks");
     }
 
     public final void sendTelemetry() throws IOException {
         CallsTelemetry callsTelemetry = CallsTelemetry.forId(requestId);
         ConnectionTelemetry connectionTelemetry = ConnectionTelemetry.forId(connectionId);
-        String telemetry = new TelemetryInfo(connectionId, callsTelemetry, connectionTelemetry).toJson();
+        AudioTelemetry audioTelemetry = AudioTelemetry.forId(requestId);
+        String telemetry = new TelemetryInfo(connectionId, callsTelemetry, connectionTelemetry, audioTelemetry).toJson();
         String telemetryMessage = createTextMessage(TELEMETRY, requestId, JSON, telemetry);
         sendTextMessage(telemetryMessage);
         log.info("Sent telemetry: " + telemetry);

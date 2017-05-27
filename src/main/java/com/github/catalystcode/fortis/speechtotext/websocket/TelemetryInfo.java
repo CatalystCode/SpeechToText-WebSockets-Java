@@ -1,5 +1,6 @@
 package com.github.catalystcode.fortis.speechtotext.websocket;
 
+import com.github.catalystcode.fortis.speechtotext.telemetry.AudioTelemetry;
 import com.github.catalystcode.fortis.speechtotext.telemetry.CallsTelemetry;
 import com.github.catalystcode.fortis.speechtotext.telemetry.ConnectionTelemetry;
 import org.json.JSONObject;
@@ -15,11 +16,13 @@ class TelemetryInfo {
     private final String connectionId;
     private final CallsTelemetry callsTelemetry;
     private final ConnectionTelemetry connectionTelemetry;
+    private AudioTelemetry audioTelemetry;
 
-    TelemetryInfo(String connectionId, CallsTelemetry callsTelemetry, ConnectionTelemetry connectionTelemetry) {
+    TelemetryInfo(String connectionId, CallsTelemetry callsTelemetry, ConnectionTelemetry connectionTelemetry, AudioTelemetry audioTelemetry) {
         this.connectionId = connectionId;
         this.callsTelemetry = callsTelemetry;
         this.connectionTelemetry = connectionTelemetry;
+        this.audioTelemetry = audioTelemetry;
     }
 
     String toJson() {
@@ -32,7 +35,6 @@ class TelemetryInfo {
     private void putMetrics(JSONObject json) {
         Collection<JSONObject> metrics = new ArrayList<>();
         metrics.add(createConnectionMetric());
-        metrics.add(createListeningTriggerMetric());
         metrics.add(createMicrophoneMetric());
         json.put("Metrics", metrics);
     }
@@ -50,17 +52,7 @@ class TelemetryInfo {
             }
             receivedMessages.add(receivedMessage);
         }
-
         json.put("ReceivedMessages", receivedMessages);
-    }
-
-    private JSONObject createListeningTriggerMetric() {
-        JSONObject metric = new JSONObject();
-        metric.put("Name", "Microphone");
-        metric.put("Start", "todo"); // todo
-        metric.put("End", "todo"); // todo
-        metric.put("Error", "todo"); // todo
-        return metric;
     }
 
     private JSONObject createConnectionMetric() {
@@ -76,9 +68,9 @@ class TelemetryInfo {
     private JSONObject createMicrophoneMetric() {
         JSONObject metric = new JSONObject();
         metric.put("Name", "Microphone");
-        metric.put("Start", "todo"); // todo
-        metric.put("End", "todo"); // todo
-        metric.put("Error", "todo"); // todo
+        metric.put("Start", audioTelemetry.getAudioStarted());
+        metric.put("End", audioTelemetry.getAudioEnded());
+        addError(metric, audioTelemetry.getAudioErrored());
         return metric;
     }
 
