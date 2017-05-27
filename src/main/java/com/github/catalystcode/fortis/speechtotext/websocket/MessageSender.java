@@ -1,5 +1,7 @@
 package com.github.catalystcode.fortis.speechtotext.websocket;
 
+import com.github.catalystcode.fortis.speechtotext.telemetry.CallsTelemetry;
+import com.github.catalystcode.fortis.speechtotext.telemetry.ConnectionTelemetry;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -46,7 +48,9 @@ public abstract class MessageSender {
     }
 
     public final void sendTelemetry() throws IOException {
-        String telemetry = new TelemetryInfo(connectionId, requestId).toJson();
+        CallsTelemetry callsTelemetry = CallsTelemetry.forId(requestId);
+        ConnectionTelemetry connectionTelemetry = ConnectionTelemetry.forId(connectionId);
+        String telemetry = new TelemetryInfo(connectionId, callsTelemetry, connectionTelemetry).toJson();
         String telemetryMessage = createTextMessage(TELEMETRY, requestId, JSON, telemetry);
         sendTextMessage(telemetryMessage);
         log.info("Sent telemetry: " + telemetry);

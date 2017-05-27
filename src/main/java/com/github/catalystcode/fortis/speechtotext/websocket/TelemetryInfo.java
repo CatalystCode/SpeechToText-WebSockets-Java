@@ -13,11 +13,13 @@ import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServic
 
 class TelemetryInfo {
     private final String connectionId;
-    private final String requestId;
+    private final CallsTelemetry callsTelemetry;
+    private final ConnectionTelemetry connectionTelemetry;
 
-    TelemetryInfo(String connectionId, String requestId) {
+    TelemetryInfo(String connectionId, CallsTelemetry callsTelemetry, ConnectionTelemetry connectionTelemetry) {
         this.connectionId = connectionId;
-        this.requestId = requestId;
+        this.callsTelemetry = callsTelemetry;
+        this.connectionTelemetry = connectionTelemetry;
     }
 
     String toJson() {
@@ -36,9 +38,8 @@ class TelemetryInfo {
     }
 
     private void putReceivedMessages(JSONObject json) {
-        Map<String, Queue<String>> callTimestamps = CallsTelemetry.forId(requestId).getCallTimestamps();
-        Collection<JSONObject> receivedMessages = new ArrayList<>(callTimestamps.size());
-        for (Map.Entry<String, Queue<String>> entry : callTimestamps.entrySet()) {
+        Collection<JSONObject> receivedMessages = new ArrayList<>();
+        for (Map.Entry<String, Queue<String>> entry : callsTelemetry.getCallTimestamps().entrySet()) {
             String endpoint = entry.getKey();
             Queue<String> calls = entry.getValue();
             JSONObject receivedMessage = new JSONObject();
@@ -63,14 +64,12 @@ class TelemetryInfo {
     }
 
     private JSONObject createConnectionMetric() {
-        ConnectionTelemetry telemetry = ConnectionTelemetry.forId(connectionId);
-
         JSONObject metric = new JSONObject();
         metric.put("Name", "Connection");
         metric.put("Id", connectionId);
-        metric.put("Start", telemetry.getConnectionStarted());
-        metric.put("End", telemetry.getConnectionEstablished());
-        addError(metric, telemetry.getConnectionErrored());
+        metric.put("Start", connectionTelemetry.getConnectionStarted());
+        metric.put("End", connectionTelemetry.getConnectionEstablished());
+        addError(metric, connectionTelemetry.getConnectionErrored());
         return metric;
     }
 
