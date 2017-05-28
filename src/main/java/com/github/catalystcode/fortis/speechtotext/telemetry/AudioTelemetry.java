@@ -15,13 +15,13 @@ public final class AudioTelemetry {
     private AudioTelemetry() {}
 
     public void recordAudioStarted() {
-        if (audioStarted != null) {
+        if (audioStarted == null) {
             audioStarted = newTimestamp();
         }
     }
 
     public void recordAudioEnded() {
-        if (audioEnded != null) {
+        if (audioEnded == null) {
             audioEnded = newTimestamp();
         }
     }

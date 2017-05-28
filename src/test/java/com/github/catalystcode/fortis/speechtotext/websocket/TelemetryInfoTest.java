@@ -7,14 +7,14 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceMetrics.*;
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServicePaths.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TelemetryInfoTest {
     @Test
@@ -68,13 +68,19 @@ class TelemetryInfoTest {
     private void verifyMetrics(JSONObject telemetry) {
         JSONArray metrics = telemetry.getJSONArray(METRICS);
         assertEquals(2, metrics.length());
-        Set<String> metricNames = new HashSet<>();
+        Map<String, JSONObject> parsedMetrics = new HashMap<>();
         for (Object obj : metrics) {
             JSONObject metric = (JSONObject) obj;
-            metricNames.add(metric.getString(NAME));
+            parsedMetrics.put(metric.getString(NAME), metric);
         }
-        assertEquals(2, metricNames.size());
-        assertTrue(metricNames.contains(CONNECTION_METRIC));
-        assertTrue(metricNames.contains(MICROPHONE_METRIC));
+        assertEquals(2, parsedMetrics.size());
+        JSONObject connectionMetric = parsedMetrics.get(CONNECTION_METRIC);
+        JSONObject microphoneMetric = parsedMetrics.get(MICROPHONE_METRIC);
+        assertNotNull(connectionMetric);
+        assertNotNull(microphoneMetric);
+        assertNotNull(connectionMetric.getString(START));
+        assertNotNull(microphoneMetric.getString(START));
+        assertNotNull(connectionMetric.getString(END));
+        assertNotNull(microphoneMetric.getString(END));
     }
 }

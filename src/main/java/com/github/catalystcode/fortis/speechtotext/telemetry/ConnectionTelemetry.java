@@ -15,13 +15,13 @@ public final class ConnectionTelemetry {
     private ConnectionTelemetry() {}
 
     public void recordConnectionStarted() {
-        if (connectionStarted != null) {
+        if (connectionStarted == null) {
             connectionStarted = newTimestamp();
         }
     }
 
     public void recordConnectionEstablished() {
-        if (connectionEstablished != null) {
+        if (connectionEstablished == null) {
             connectionEstablished = newTimestamp();
         }
     }
