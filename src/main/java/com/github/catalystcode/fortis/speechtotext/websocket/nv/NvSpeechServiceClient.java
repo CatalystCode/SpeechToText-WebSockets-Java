@@ -28,8 +28,8 @@ public class NvSpeechServiceClient implements SpeechServiceClient {
         WebSocketFactory factory = new WebSocketFactory();
         webSocket = factory.createSocket(config.getConnectionUrl(connectionId));
         webSocket.addListener(new NvMessageReceiver(socketCloseLatch, receiver, telemetry));
-        webSocket.connect();
         telemetry.recordConnectionStarted();
+        webSocket.connect();
         return new NvMessageSender(connectionId, webSocket);
     }
 
