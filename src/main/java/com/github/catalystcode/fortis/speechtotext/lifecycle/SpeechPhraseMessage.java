@@ -11,17 +11,27 @@ final class SpeechPhraseMessage {
     private SpeechPhraseMessage() {}
 
     static void handle(JSONObject message, Func<String> onResult) {
-        String status = message.getString(RECOGNITION_STATUS);
-
-        if (END_OF_DICTATION_STATUS.equalsIgnoreCase(status)) {
-            log.info("Detected end of speech");
-            return;
-        } else if (!SUCCESS_STATUS.equalsIgnoreCase(status)) {
-            log.warn("Unable to recognize audio: " + message);
+        if (!isSuccess(message)) {
             return;
         }
 
         String displayText = message.getString(DISPLAY_TEXT);
         onResult.call(displayText);
+    }
+
+    private static boolean isSuccess(JSONObject message) {
+        String status = message.getString(RECOGNITION_STATUS);
+
+        if (END_OF_DICTATION_STATUS.equalsIgnoreCase(status)) {
+            log.info("Detected end of speech");
+            return false;
+        }
+
+        if (!SUCCESS_STATUS.equalsIgnoreCase(status)) {
+            log.warn("Unable to recognize audio: " + message);
+            return false;
+        }
+
+        return true;
     }
 }
