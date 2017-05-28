@@ -4,9 +4,9 @@ public final class SpeechServiceSpeechConfig {
     private SpeechServiceSpeechConfig() {}
 
     public static final String CONTEXT = "context";
-    public static final String SYSTEM = "SYSTEM";
-    public static final String OS = "OS";
-    public static final String DEVICE = "DEVICE";
+    public static final String SYSTEM = "system";
+    public static final String OS = "os";
+    public static final String DEVICE = "device";
     public static final String SYSTEM_VERSION = "version";
     public static final String OS_PLATFORM = "platform";
     public static final String OS_NAME = "name";
