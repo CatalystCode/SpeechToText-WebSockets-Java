@@ -29,10 +29,14 @@ public class SpeechTranscriber {
             MessageSender sender = client.start(config, receiver);
             receiver.setSender(sender);
             sender.sendConfiguration();
-            sender.sendAudio(wavStream);
+            sendAudioAsync(wavStream, sender);
             client.awaitEnd();
         } finally {
             client.stop();
         }
+    }
+
+    private void sendAudioAsync(InputStream wavStream, MessageSender sender) {
+        new Thread(() -> sender.sendAudio(wavStream)).run();
     }
 }
