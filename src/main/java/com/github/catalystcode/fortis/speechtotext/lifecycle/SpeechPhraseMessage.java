@@ -13,7 +13,10 @@ final class SpeechPhraseMessage {
     static void handle(JSONObject message, Func<String> onResult) {
         String status = message.getString(RECOGNITION_STATUS);
 
-        if (!SUCCESS_STATUS.equalsIgnoreCase(status)) {
+        if (END_OF_DICTATION_STATUS.equalsIgnoreCase(status)) {
+            log.info("Detected end of speech");
+            return;
+        } else if (!SUCCESS_STATUS.equalsIgnoreCase(status)) {
             log.warn("Unable to recognize audio: " + message);
             return;
         }
