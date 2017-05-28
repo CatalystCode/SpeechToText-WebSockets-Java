@@ -14,6 +14,7 @@ import java.util.Set;
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceMetrics.*;
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServicePaths.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class TelemetryInfoTest {
@@ -26,9 +27,34 @@ class TelemetryInfoTest {
         verifyMetrics(telemetry);
     }
 
+    @Test
+    void sameTelemetryIsUsedForRequest() {
+        String testName = "sameTelemetryIsUsedForRequest";
+        String connectionId = newConnectionId(testName);
+        String requestId = newRequestId(testName);
+
+        ConnectionTelemetry connectionTelemetry1 = ConnectionTelemetry.forId(connectionId);
+        ConnectionTelemetry connectionTelemetry2 = ConnectionTelemetry.forId("otherConnectionId");
+        ConnectionTelemetry connectionTelemetry3 = ConnectionTelemetry.forId(connectionId);
+        assertNotEquals(connectionTelemetry1, connectionTelemetry2);
+        assertEquals(connectionTelemetry1, connectionTelemetry3);
+
+        CallsTelemetry callsTelemetry1 = CallsTelemetry.forId(requestId);
+        CallsTelemetry callsTelemetry2 = CallsTelemetry.forId("otherRequestId");
+        CallsTelemetry callsTelemetry3 = CallsTelemetry.forId(requestId);
+        assertNotEquals(callsTelemetry1, callsTelemetry2);
+        assertEquals(callsTelemetry1, callsTelemetry3);
+
+        CallsTelemetry audioTelemetry1 = CallsTelemetry.forId(requestId);
+        CallsTelemetry audioTelemetry2 = CallsTelemetry.forId("otherRequestId");
+        CallsTelemetry audioTelemetry3 = CallsTelemetry.forId(requestId);
+        assertNotEquals(audioTelemetry1, audioTelemetry2);
+        assertEquals(audioTelemetry1, audioTelemetry3);
+    }
+
     private String setupTelemetry(String testName) {
-        String connectionId = getClass().getName() + "-" + testName + "-connectionId";
-        String requestId = getClass().getName() + "-canBeConvertedToJson-requestId";
+        String connectionId = newConnectionId(testName);
+        String requestId = newRequestId(testName);
         CallsTelemetry callsTelemetry = CallsTelemetry.forId(requestId);
         ConnectionTelemetry connectionTelemetry = ConnectionTelemetry.forId(connectionId);
         AudioTelemetry audioTelemetry = AudioTelemetry.forId(requestId);
@@ -45,6 +71,14 @@ class TelemetryInfoTest {
         audioTelemetry.recordAudioEnded();
 
         return new TelemetryInfo(connectionId, callsTelemetry, connectionTelemetry, audioTelemetry).toJson();
+    }
+
+    private String newRequestId(String testName) {
+        return getClass().getName() + "-" + testName + "-requestId";
+    }
+
+    private String newConnectionId(String testName) {
+        return getClass().getName() + "-" + testName + "-connectionId";
     }
 
     private void verifyReceivedMessages(JSONObject telemetry) {
