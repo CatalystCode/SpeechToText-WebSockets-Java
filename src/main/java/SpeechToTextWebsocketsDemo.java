@@ -1,6 +1,6 @@
 import com.github.catalystcode.fortis.speechtotext.SpeechTranscriber;
-import com.github.catalystcode.fortis.speechtotext.config.Endpoint;
-import com.github.catalystcode.fortis.speechtotext.config.Format;
+import com.github.catalystcode.fortis.speechtotext.config.SpeechType;
+import com.github.catalystcode.fortis.speechtotext.config.OutputFormat;
 import com.github.catalystcode.fortis.speechtotext.config.SpeechServiceConfig;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
@@ -19,13 +19,13 @@ public class SpeechToTextWebsocketsDemo {
 
     public static void main(String[] args) throws Exception {
         final String subscriptionKey = System.getenv("OXFORD_SPEECH_TOKEN");
-        final Endpoint endpoint = Endpoint.DICTATION;
-        final Format format = Format.SIMPLE;
+        final SpeechType speechType = SpeechType.DICTATION;
+        final OutputFormat outputFormat = OutputFormat.SIMPLE;
         final Locale locale = new Locale("en-US");
         final String wavPath = args[0];
 
         InputStream wavStream = new BufferedInputStream(new FileInputStream(wavPath));
-        SpeechServiceConfig config = new SpeechServiceConfig(subscriptionKey, endpoint, format, locale);
+        SpeechServiceConfig config = new SpeechServiceConfig(subscriptionKey, speechType, outputFormat, locale);
 
         SpeechTranscriber transcriber = new SpeechTranscriber(config);
         try {

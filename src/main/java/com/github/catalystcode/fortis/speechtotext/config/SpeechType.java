@@ -1,15 +1,15 @@
 package com.github.catalystcode.fortis.speechtotext.config;
 
 @SuppressWarnings("unused")
-public enum Endpoint {
+public enum SpeechType {
     INTERACTIVE("/speech/recognition/interactive/cognitiveservices/v1"),
     DICTATION("/speech/recognition/dictation/cognitiveservices/v1"),
     CONVERSATION("/speech/recognition/conversation/cognitiveservices/v1"),
     ;
 
-    public final String path;
+    public final String endpoint;
 
-    Endpoint(String url) {
-        this.path = url;
+    SpeechType(String endpoint) {
+        this.endpoint = endpoint;
     }
 }

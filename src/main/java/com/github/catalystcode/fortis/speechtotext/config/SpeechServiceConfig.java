@@ -7,23 +7,23 @@ import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServic
 
 public class SpeechServiceConfig {
     private final String subscriptionKey;
-    private final Endpoint endpoint;
-    private final Format format;
+    private final SpeechType speechType;
+    private final OutputFormat outputFormat;
     private final Locale locale;
     private final String host;
 
-    public SpeechServiceConfig(String subscriptionKey, Endpoint endpoint, Format format, Locale locale) {
+    public SpeechServiceConfig(String subscriptionKey, SpeechType speechType, OutputFormat outputFormat, Locale locale) {
         this.subscriptionKey = subscriptionKey;
-        this.endpoint = endpoint;
-        this.format = format;
+        this.speechType = speechType;
+        this.outputFormat = outputFormat;
         this.locale = locale;
         this.host = getSpeechPlatformHost();
     }
 
     public String getConnectionUrl(String connectionId) {
-        return host + endpoint.path +
+        return host + speechType.endpoint +
             '?' + LANGUAGE + '=' + locale.toString() +
-            '&' + FORMAT + '=' + format.value +
+            '&' + FORMAT + '=' + outputFormat.value +
             '&' + CONNECTION_ID + '=' + connectionId +
             '&' + SUBSCRIPTION_KEY + '=' + subscriptionKey;
     }
