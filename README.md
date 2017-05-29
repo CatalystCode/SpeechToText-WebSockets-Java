@@ -10,9 +10,6 @@ Run a demo via:
 # set up all the requisite environment variables
 export OXFORD_SPEECH_TOKEN="..."
 
-# fetch a sample audio file
-curl -O 'https://raw.githubusercontent.com/Azure-Samples/Cognitive-Speech-STT-Windows/master/samples/SpeechRecognitionServiceExample/batman.wav'
-
 # stream the audio and transcribe
-mvn exec:java -Dexec.args='batman.wav' -Dexec.mainClass='SpeechToTextWebsocketsDemo'
+mvn exec:java -Dexec.args='examples/data/batman.wav' -Dexec.mainClass='SpeechToTextWebsocketsDemo'
 ```
