@@ -19,7 +19,7 @@ public class SpeechToTextWebsocketsDemo {
 
     public static void main(String[] args) throws Exception {
         final String subscriptionKey = System.getenv("OXFORD_SPEECH_TOKEN");
-        final Endpoint endpoint = Endpoint.CONVERSATION;
+        final Endpoint endpoint = Endpoint.DICTATION;
         final Format format = Format.SIMPLE;
         final Locale locale = new Locale("en-US");
         final String wavPath = args[0];
