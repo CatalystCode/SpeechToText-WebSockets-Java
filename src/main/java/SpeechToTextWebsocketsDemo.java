@@ -14,7 +14,7 @@ import java.util.Locale;
 public class SpeechToTextWebsocketsDemo {
     static {
         BasicConfigurator.configure();
-        Logger.getRootLogger().setLevel(Level.INFO);
+        Logger.getRootLogger().setLevel(Level.WARN);
     }
 
     public static void main(String[] args) throws Exception {
