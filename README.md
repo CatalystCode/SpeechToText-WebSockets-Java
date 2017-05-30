@@ -11,5 +11,5 @@ Run a demo via:
 export OXFORD_SPEECH_TOKEN="..."
 
 # stream the audio and transcribe
-mvn exec:java -Dexec.args='examples/data/batman.wav' -Dexec.mainClass='SpeechToTextWebsocketsDemo'
+sbt "runMain SpeechToTextWebsocketsDemo examples/data/batman.wav"
 ```
