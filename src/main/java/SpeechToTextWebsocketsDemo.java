@@ -24,14 +24,11 @@ public class SpeechToTextWebsocketsDemo {
         final Locale locale = new Locale("en-US");
         final String wavPath = args[0];
 
-        InputStream wavStream = new BufferedInputStream(new FileInputStream(wavPath));
         SpeechServiceConfig config = new SpeechServiceConfig(subscriptionKey, speechType, outputFormat, locale);
 
         SpeechTranscriber transcriber = new SpeechTranscriber(config);
-        try {
+        try (InputStream wavStream = new BufferedInputStream(new FileInputStream(wavPath))) {
             transcriber.transcribe(wavStream, System.out::println);
-        } finally {
-            wavStream.close();
         }
     }
 }
