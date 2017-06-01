@@ -11,6 +11,7 @@ import java.util.concurrent.CountDownLatch;
 
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceMessageHeaders.PATH;
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceMessageHeaders.REQUEST_ID;
+import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServicePaths.SPEECH_HYPOTHESIS;
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServicePaths.SPEECH_PHRASE;
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServicePaths.TURN_END;
 import static com.github.catalystcode.fortis.speechtotext.utils.MessageUtils.parseBody;
@@ -20,11 +21,13 @@ import static com.github.catalystcode.fortis.speechtotext.utils.MessageUtils.par
 public class MessageReceiver {
     private static final Logger log = Logger.getLogger(MessageReceiver.class);
     private final Func<String> onResult;
+    private final Func<String> onHypothesis;
     private final CountDownLatch endLatch;
     private MessageSender sender;
 
-    public MessageReceiver(Func<String> onResult, CountDownLatch endLatch) {
+    public MessageReceiver(Func<String> onResult, Func<String> onHypothesis, CountDownLatch endLatch) {
         this.onResult = onResult;
+        this.onHypothesis = onHypothesis;
         this.endLatch = endLatch;
     }
 
@@ -37,7 +40,9 @@ public class MessageReceiver {
         CallsTelemetry.forId(requestId).recordCall(path);
         log.debug("Got message at path " + path + " with payload '" + body + "'");
 
-        if (SPEECH_PHRASE.equalsIgnoreCase(path)) {
+        if (SPEECH_HYPOTHESIS.equalsIgnoreCase(path)) {
+            SpeechHypothesisMessage.handle(body, onHypothesis);
+        } else if (SPEECH_PHRASE.equalsIgnoreCase(path)) {
             SpeechPhraseMessage.handle(body, onResult);
         } else if (TURN_END.equalsIgnoreCase(path)) {
             TurnEndMessage.handle(sender, endLatch);

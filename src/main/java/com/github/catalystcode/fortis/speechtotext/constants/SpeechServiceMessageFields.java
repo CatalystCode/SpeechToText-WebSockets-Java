@@ -7,4 +7,5 @@ public final class SpeechServiceMessageFields {
     public static final String SUCCESS_STATUS = "Success";
     public static final String END_OF_DICTATION_STATUS = "EndOfDictation";
     public static final String DISPLAY_TEXT = "DisplayText";
+    public static final String HYPOTHESIS_TEXT = "Text";
 }

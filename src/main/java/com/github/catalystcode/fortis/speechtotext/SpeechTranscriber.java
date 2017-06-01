@@ -24,7 +24,12 @@ public class SpeechTranscriber {
     }
 
     public void transcribe(InputStream wavStream, Func<String> onResult) throws Exception {
-        MessageReceiver receiver = new MessageReceiver(onResult, client.getEndLatch());
+        transcribe(wavStream, onResult, null);
+    }
+
+    @SuppressWarnings({"WeakerAccess", "SameParameterValue"})
+    public void transcribe(InputStream wavStream, Func<String> onResult, Func<String> onHypothesis) throws Exception {
+        MessageReceiver receiver = new MessageReceiver(onResult, onHypothesis, client.getEndLatch());
         try {
             MessageSender sender = client.start(config, receiver);
             receiver.setSender(sender);
