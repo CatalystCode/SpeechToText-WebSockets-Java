@@ -14,23 +14,60 @@ import static java.nio.ByteBuffer.allocate;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class BinaryMessageCreator {
+    private static final Logger log = Logger.getLogger(BinaryMessageCreator.class);
+
     private boolean isFirstMessage = true;
     private int sampleRate;
 
     public ByteBuffer createBinaryMessage(String path, String requestId, String contentType, byte[] wavBytes, int count) {
-        if (isFirstMessage) sampleRate = new RiffHeader(wavBytes).sampleRate;
-        byte[] header = addHeaders(new StringBuilder(), path, requestId, contentType).toString().getBytes(UTF_8);
-        int bufSize = 2 + header.length + count;
-        if (isFirstMessage) bufSize += RIFF_HEADER_LENGHT;
-        ByteBuffer buf = allocate(bufSize);
-        buf.putShort((short)header.length);
-        buf.put(header);
+        setSampleRate(wavBytes);
+        byte[] headers = formatHeaders(path, requestId, contentType);
+        ByteBuffer buf = allocateBuffer(count, headers.length);
+        putHeader(headers, buf);
+        putContent(wavBytes, count, buf);
+        updateState();
+        return buf;
+    }
+
+    private byte[] formatHeaders(String path, String requestId, String contentType) {
+        return addHeaders(new StringBuilder(), path, requestId, contentType).toString().getBytes(UTF_8);
+    }
+
+    private void putContent(byte[] wavBytes, int count, ByteBuffer buf) {
+        if (count <= 0) {
+            return;
+        }
+
         int offset = isFirstMessage ? RIFF_HEADER_LENGHT : 0;
         int length = isFirstMessage ? count - RIFF_HEADER_LENGHT : count;
-        if (isFirstMessage && count > 0) putRiffHeader(buf, SAMPLE_RATE, NUM_CHANNELS);
-        if (count > 0) putAudio(buf, wavBytes, offset, length, sampleRate, SAMPLE_RATE);
-        if (isFirstMessage) isFirstMessage = false;
-        return buf;
+        if (isFirstMessage) putRiffHeader(buf, SAMPLE_RATE, NUM_CHANNELS);
+        putAudio(buf, wavBytes, offset, length, sampleRate, SAMPLE_RATE);
+    }
+
+    private void updateState() {
+        if (isFirstMessage) {
+            isFirstMessage = false;
+        }
+    }
+
+    private void putHeader(byte[] header, ByteBuffer buf) {
+        buf.putShort((short)header.length);
+        buf.put(header);
+    }
+
+    private ByteBuffer allocateBuffer(int numWavBytes, int numHeaderBytes) {
+        int bufSize = 2 + numHeaderBytes + numWavBytes;
+        if (isFirstMessage) bufSize += RIFF_HEADER_LENGHT;
+        return allocate(bufSize);
+    }
+
+    private void setSampleRate(byte[] wavBytes) {
+        if (!isFirstMessage) {
+            return;
+        }
+
+        sampleRate = new RiffHeader(wavBytes).sampleRate;
+        log.debug("Got WAV with sample rate of " + sampleRate + "hz");
     }
 
     private boolean needsResampling() {
