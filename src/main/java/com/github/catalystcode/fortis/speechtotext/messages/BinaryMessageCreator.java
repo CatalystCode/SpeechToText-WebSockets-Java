@@ -14,35 +14,23 @@ import static java.nio.ByteBuffer.allocate;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class BinaryMessageCreator {
-    private static final Logger log = Logger.getLogger(BinaryMessageCreator.class);
-
     private boolean isFirstMessage = true;
     private int sampleRate;
 
     public ByteBuffer createBinaryMessage(String path, String requestId, String contentType, byte[] wavBytes, int count) {
-        RiffHeader riffHeader = isFirstMessage ? new RiffHeader(wavBytes) : null;
-        if (isFirstMessage) setSampleRate(riffHeader);
+        if (isFirstMessage) sampleRate = new RiffHeader(wavBytes).sampleRate;
         byte[] header = addHeaders(new StringBuilder(), path, requestId, contentType).toString().getBytes(UTF_8);
         int bufSize = 2 + header.length + count;
         if (isFirstMessage) bufSize += RIFF_HEADER_LENGHT;
         ByteBuffer buf = allocate(bufSize);
         buf.putShort((short)header.length);
         buf.put(header);
-        int offset = isFirstMessage && riffHeader.isValid ? RIFF_HEADER_LENGHT : 0;
-        int length = isFirstMessage && riffHeader.isValid ? count - RIFF_HEADER_LENGHT : count;
+        int offset = isFirstMessage ? RIFF_HEADER_LENGHT : 0;
+        int length = isFirstMessage ? count - RIFF_HEADER_LENGHT : count;
         if (isFirstMessage && count > 0) putRiffHeader(buf, SAMPLE_RATE, NUM_CHANNELS);
         if (count > 0) putAudio(buf, wavBytes, offset, length, sampleRate, SAMPLE_RATE);
         if (isFirstMessage) isFirstMessage = false;
         return buf;
-    }
-
-    private void setSampleRate(RiffHeader riffHeader) {
-        if (riffHeader.isValid) {
-            sampleRate = riffHeader.sampleRate;
-        } else {
-            log.warn("Got a WAV stream with invalid RIFF header, assuming " + SAMPLE_RATE + "hz sample rate");
-            sampleRate = SAMPLE_RATE;
-        }
     }
 
     private boolean needsResampling() {

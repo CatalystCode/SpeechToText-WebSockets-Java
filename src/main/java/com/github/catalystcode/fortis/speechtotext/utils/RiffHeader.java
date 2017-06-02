@@ -28,7 +28,6 @@ public final class RiffHeader {
     public final short bitsPerSample;
     public final int subChunk2Id;
     public final int subChunk2Size;
-    public final boolean isValid;
 
     public RiffHeader(byte[] wavBytes) {
         ByteBuffer waveHeader = wrap(wavBytes, 0, RIFF_HEADER_LENGHT);
@@ -57,8 +56,6 @@ public final class RiffHeader {
 
         waveHeader.order(LITTLE_ENDIAN);
         subChunk2Size = waveHeader.getInt();
-
-        isValid = chunkId == CHUNKID_RIFF && format == FORMAT_WAVE;
     }
 
     public static void putRiffHeader(ByteBuffer buf, int sampleRate, short numChannels) {
