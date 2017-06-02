@@ -1,4 +1,4 @@
-package com.github.catalystcode.fortis.speechtotext.utils;
+package com.github.catalystcode.fortis.speechtotext.messages;
 
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceMessageHeaders.HEADER_DELIM;
 

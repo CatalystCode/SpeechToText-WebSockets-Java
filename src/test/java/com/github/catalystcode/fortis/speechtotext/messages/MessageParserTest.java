@@ -1,4 +1,4 @@
-package com.github.catalystcode.fortis.speechtotext.utils;
+package com.github.catalystcode.fortis.speechtotext.messages;
 
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;

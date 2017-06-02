@@ -2,7 +2,7 @@ package com.github.catalystcode.fortis.speechtotext.lifecycle;
 
 import com.github.catalystcode.fortis.speechtotext.telemetry.CallsTelemetry;
 import com.github.catalystcode.fortis.speechtotext.utils.Func;
-import com.github.catalystcode.fortis.speechtotext.utils.MessageParser;
+import com.github.catalystcode.fortis.speechtotext.messages.MessageParser;
 import com.github.catalystcode.fortis.speechtotext.websocket.MessageSender;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;

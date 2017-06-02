@@ -3,8 +3,8 @@ package com.github.catalystcode.fortis.speechtotext.websocket;
 import com.github.catalystcode.fortis.speechtotext.telemetry.AudioTelemetry;
 import com.github.catalystcode.fortis.speechtotext.telemetry.CallsTelemetry;
 import com.github.catalystcode.fortis.speechtotext.telemetry.ConnectionTelemetry;
-import com.github.catalystcode.fortis.speechtotext.utils.BinaryMessageCreator;
-import com.github.catalystcode.fortis.speechtotext.utils.TextMessageCreator;
+import com.github.catalystcode.fortis.speechtotext.messages.BinaryMessageCreator;
+import com.github.catalystcode.fortis.speechtotext.messages.TextMessageCreator;
 import org.apache.log4j.Logger;
 
 import java.io.InputStream;
