@@ -21,12 +21,10 @@ public abstract class MessageSender {
 
     private final String connectionId;
     private final String requestId;
-    private final BinaryMessageCreator binaryMessageCreator;
 
     protected MessageSender(String connectionId) {
         this.connectionId = connectionId;
         this.requestId = newGuid();
-        this.binaryMessageCreator = new BinaryMessageCreator();
     }
 
     public final void sendConfiguration() {
@@ -39,6 +37,7 @@ public abstract class MessageSender {
     public final void sendAudio(InputStream wavStream) {
         AudioTelemetry audioTelemetry = AudioTelemetry.forId(requestId);
         audioTelemetry.recordAudioStarted();
+        BinaryMessageCreator binaryMessageCreator = new BinaryMessageCreator();
         try {
             byte[] buf = new byte[MAX_BYTES_PER_AUDIO_CHUNK];
             int chunksSent = 0;
