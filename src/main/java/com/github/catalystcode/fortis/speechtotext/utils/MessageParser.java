@@ -8,10 +8,10 @@ import java.util.Map;
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceMessageHeaders.BODY_DELIM;
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceMessageHeaders.HEADER_DELIM;
 
-final class MessageParser {
+public final class MessageParser {
     private MessageParser() {}
 
-    static Map<String, String> parseHeaders(String message) {
+    public static Map<String, String> parseHeaders(String message) {
         String[] parts = message.split(BODY_DELIM);
         if (parts.length != 2) {
             throw new IllegalArgumentException("Message '" + message + "' does not have header and body");
@@ -35,7 +35,7 @@ final class MessageParser {
         return headers;
     }
 
-    static JSONObject parseBody(String message) {
+    public static JSONObject parseBody(String message) {
         String[] parts = message.split(BODY_DELIM);
         if (parts.length != 2) {
             throw new IllegalArgumentException("Message '" + message + "' does not have header and body");

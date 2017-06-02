@@ -3,6 +3,8 @@ package com.github.catalystcode.fortis.speechtotext.websocket;
 import com.github.catalystcode.fortis.speechtotext.telemetry.AudioTelemetry;
 import com.github.catalystcode.fortis.speechtotext.telemetry.CallsTelemetry;
 import com.github.catalystcode.fortis.speechtotext.telemetry.ConnectionTelemetry;
+import com.github.catalystcode.fortis.speechtotext.utils.BinaryMessageCreator;
+import com.github.catalystcode.fortis.speechtotext.utils.TextMessageCreator;
 import org.apache.log4j.Logger;
 
 import java.io.InputStream;
@@ -12,8 +14,6 @@ import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServic
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceContentTypes.WAV;
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceLimitations.MAX_BYTES_PER_AUDIO_CHUNK;
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServicePaths.*;
-import static com.github.catalystcode.fortis.speechtotext.utils.MessageUtils.createBinaryMessage;
-import static com.github.catalystcode.fortis.speechtotext.utils.MessageUtils.createTextMessage;
 import static com.github.catalystcode.fortis.speechtotext.utils.ProtocolUtils.newGuid;
 
 public abstract class MessageSender {
@@ -21,15 +21,19 @@ public abstract class MessageSender {
 
     private final String connectionId;
     private final String requestId;
+    private final TextMessageCreator textMessageCreator;
+    private final BinaryMessageCreator binaryMessageCreator;
 
     protected MessageSender(String connectionId) {
         this.connectionId = connectionId;
         this.requestId = newGuid();
+        this.textMessageCreator = new TextMessageCreator();
+        this.binaryMessageCreator = new BinaryMessageCreator();
     }
 
     public final void sendConfiguration() {
         String config = new PlatformInfo().toJson();
-        String configMessage = createTextMessage(SPEECH_CONFIG, requestId, JSON, config);
+        String configMessage = textMessageCreator.createTextMessage(SPEECH_CONFIG, requestId, JSON, config);
         sendTextMessage(configMessage);
         log.info("Sent speech config: " + config);
     }
@@ -42,12 +46,12 @@ public abstract class MessageSender {
             int chunksSent = 0;
             int read;
             while ((read = wavStream.read(buf)) != -1) {
-                ByteBuffer audioChunkMessage = createBinaryMessage(AUDIO, requestId, WAV, buf, read);
+                ByteBuffer audioChunkMessage = binaryMessageCreator.createBinaryMessage(AUDIO, requestId, WAV, buf, read);
                 sendBinaryMessage(audioChunkMessage);
                 chunksSent++;
                 log.debug("Sent audio chunk " + chunksSent + "with " + read + " bytes");
             }
-            ByteBuffer audioEndMessage = createBinaryMessage(AUDIO, requestId, WAV, new byte[0], 0);
+            ByteBuffer audioEndMessage = binaryMessageCreator.createBinaryMessage(AUDIO, requestId, WAV, new byte[0], 0);
             sendBinaryMessage(audioEndMessage);
             log.info("Sent " + chunksSent + " audio chunks");
         } catch (Exception ex) {
@@ -63,7 +67,7 @@ public abstract class MessageSender {
         ConnectionTelemetry connectionTelemetry = ConnectionTelemetry.forId(connectionId);
         AudioTelemetry audioTelemetry = AudioTelemetry.forId(requestId);
         String telemetry = new TelemetryInfo(connectionId, callsTelemetry, connectionTelemetry, audioTelemetry).toJson();
-        String telemetryMessage = createTextMessage(TELEMETRY, requestId, JSON, telemetry);
+        String telemetryMessage = textMessageCreator.createTextMessage(TELEMETRY, requestId, JSON, telemetry);
         sendTextMessage(telemetryMessage);
         log.info("Sent telemetry: " + telemetry);
     }

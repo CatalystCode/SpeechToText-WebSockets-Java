@@ -2,6 +2,7 @@ package com.github.catalystcode.fortis.speechtotext.lifecycle;
 
 import com.github.catalystcode.fortis.speechtotext.telemetry.CallsTelemetry;
 import com.github.catalystcode.fortis.speechtotext.utils.Func;
+import com.github.catalystcode.fortis.speechtotext.utils.MessageParser;
 import com.github.catalystcode.fortis.speechtotext.websocket.MessageSender;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
@@ -11,11 +12,7 @@ import java.util.concurrent.CountDownLatch;
 
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceMessageHeaders.PATH;
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceMessageHeaders.REQUEST_ID;
-import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServicePaths.SPEECH_HYPOTHESIS;
-import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServicePaths.SPEECH_PHRASE;
-import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServicePaths.TURN_END;
-import static com.github.catalystcode.fortis.speechtotext.utils.MessageUtils.parseBody;
-import static com.github.catalystcode.fortis.speechtotext.utils.MessageUtils.parseHeaders;
+import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServicePaths.*;
 
 
 public class MessageReceiver {
@@ -32,8 +29,8 @@ public class MessageReceiver {
     }
 
     public void onMessage(String message) {
-        Map<String, String> headers = parseHeaders(message);
-        JSONObject body = parseBody(message);
+        Map<String, String> headers = MessageParser.parseHeaders(message);
+        JSONObject body = MessageParser.parseBody(message);
 
         String path = headers.get(PATH);
         String requestId = headers.get(REQUEST_ID);
