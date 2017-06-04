@@ -62,7 +62,7 @@ public class BinaryMessageCreator {
     }
 
     private static void putAudio(ByteBuffer buf, byte[] wavBytes, int sampleRate, int offset, int length) {
-        if (sampleRate == SAMPLE_RATE) {
+        if (sampleRate <= SAMPLE_RATE) {
             buf.put(wavBytes, offset, length);
             return;
         }
