@@ -23,7 +23,7 @@ public class BinaryMessageCreator {
         return buf;
     }
 
-    private byte[] formatHeaders(String path, String requestId, String contentType) {
+    private static byte[] formatHeaders(String path, String requestId, String contentType) {
         return addHeaders(new StringBuilder(), path, requestId, contentType).toString().getBytes(UTF_8);
     }
 
@@ -44,7 +44,7 @@ public class BinaryMessageCreator {
         }
     }
 
-    private void putHeader(byte[] header, ByteBuffer buf) {
+    private static void putHeader(byte[] header, ByteBuffer buf) {
         buf.putShort((short)header.length);
         buf.put(header);
     }
@@ -57,11 +57,11 @@ public class BinaryMessageCreator {
         return allocate(bufSize);
     }
 
-    private int computeResampledNumBytes(int numWavBytes, int sampleRate) {
+    private static int computeResampledNumBytes(int numWavBytes, int sampleRate) {
         return (int)round(numWavBytes / (sampleRate / (double)SAMPLE_RATE));
     }
 
-    private void putAudio(ByteBuffer buf, byte[] wavBytes, int sampleRate, int offset, int length) {
+    private static void putAudio(ByteBuffer buf, byte[] wavBytes, int sampleRate, int offset, int length) {
         if (sampleRate == SAMPLE_RATE) {
             buf.put(wavBytes, offset, length);
             return;
