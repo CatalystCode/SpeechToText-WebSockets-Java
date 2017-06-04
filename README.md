@@ -13,3 +13,11 @@ export OXFORD_SPEECH_TOKEN="..."
 # stream the audio and transcribe
 sbt "runMain SpeechToTextWebsocketsDemo examples/data/batman.wav"
 ```
+
+## Release process ##
+
+1. Configure your credentials via the `SONATYPE_USER` and `SONATYPE_PASSWORD` environment variables.
+2. Update `version.sbt`
+3. Run `sbt sonatypeOpen "enter staging description here"`
+4. Run `sbt publishSigned`
+5. Run `sbt sonatypeRelease`
