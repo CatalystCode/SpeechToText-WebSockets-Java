@@ -16,7 +16,6 @@ import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServic
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServicePaths.*;
 import static com.github.catalystcode.fortis.speechtotext.messages.TextMessageCreator.createTextMessage;
 import static com.github.catalystcode.fortis.speechtotext.utils.ProtocolUtils.newGuid;
-import static java.lang.Integer.highestOneBit;
 
 public abstract class MessageSender {
     private static final Logger log = Logger.getLogger(MessageSender.class);
@@ -62,9 +61,14 @@ public abstract class MessageSender {
     }
 
     private static int computeBufferSize(int sampleRate) {
-        int bufferSize = sampleRate == SAMPLE_RATE
-            ? MAX_BYTES_PER_AUDIO_CHUNK
-            : highestOneBit((int)(sampleRate * (MAX_BYTES_PER_AUDIO_CHUNK / (double)SAMPLE_RATE)) - 1);
+        int bufferSize;
+        if (SAMPLE_RATE <= sampleRate / 4) {
+            bufferSize = MAX_BYTES_PER_AUDIO_CHUNK;
+        } else if (SAMPLE_RATE <= sampleRate / 2) {
+            bufferSize = MAX_BYTES_PER_AUDIO_CHUNK / 2;
+        } else {
+            bufferSize = MAX_BYTES_PER_AUDIO_CHUNK / 4;
+        }
         log.debug("Got sample rate of " + sampleRate + "hz so using buffer size of " + bufferSize);
         return  bufferSize;
     }
