@@ -12,9 +12,11 @@ import java.nio.ByteBuffer;
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceContentTypes.JSON;
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceContentTypes.WAV;
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceLimitations.MAX_BYTES_PER_AUDIO_CHUNK;
+import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceLimitations.SAMPLE_RATE;
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServicePaths.*;
 import static com.github.catalystcode.fortis.speechtotext.messages.TextMessageCreator.createTextMessage;
 import static com.github.catalystcode.fortis.speechtotext.utils.ProtocolUtils.newGuid;
+import static java.lang.Integer.highestOneBit;
 
 public abstract class MessageSender {
     private static final Logger log = Logger.getLogger(MessageSender.class);
@@ -39,7 +41,7 @@ public abstract class MessageSender {
         audioTelemetry.recordAudioStarted();
         BinaryMessageCreator binaryMessageCreator = new BinaryMessageCreator();
         try {
-            byte[] buf = new byte[MAX_BYTES_PER_AUDIO_CHUNK];
+            byte[] buf = new byte[computeBufferSize(sampleRate)];
             int chunksSent = 0;
             int read;
             while ((read = wavStream.read(buf)) != -1) {
@@ -57,6 +59,14 @@ public abstract class MessageSender {
         } finally {
             audioTelemetry.recordAudioEnded();
         }
+    }
+
+    private static int computeBufferSize(int sampleRate) {
+        int bufferSize = sampleRate == SAMPLE_RATE
+            ? MAX_BYTES_PER_AUDIO_CHUNK
+            : highestOneBit((int)(sampleRate * (MAX_BYTES_PER_AUDIO_CHUNK / (double)SAMPLE_RATE)) - 1);
+        log.debug("Got sample rate of " + sampleRate + "hz so using buffer size of " + bufferSize);
+        return  bufferSize;
     }
 
     public final void sendTelemetry() {
