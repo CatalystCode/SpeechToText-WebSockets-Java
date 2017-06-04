@@ -34,7 +34,7 @@ public abstract class MessageSender {
         log.info("Sent speech config: " + config);
     }
 
-    public final void sendAudio(InputStream wavStream) {
+    public final void sendAudio(InputStream wavStream, int sampleRate) {
         AudioTelemetry audioTelemetry = AudioTelemetry.forId(requestId);
         audioTelemetry.recordAudioStarted();
         BinaryMessageCreator binaryMessageCreator = new BinaryMessageCreator();
@@ -43,12 +43,12 @@ public abstract class MessageSender {
             int chunksSent = 0;
             int read;
             while ((read = wavStream.read(buf)) != -1) {
-                ByteBuffer audioChunkMessage = binaryMessageCreator.createBinaryMessage(AUDIO, requestId, WAV, buf, read);
+                ByteBuffer audioChunkMessage = binaryMessageCreator.createBinaryMessage(AUDIO, requestId, WAV, buf, sampleRate, read);
                 sendBinaryMessage(audioChunkMessage);
                 chunksSent++;
                 log.debug("Sent audio chunk " + chunksSent + "with " + read + " bytes");
             }
-            ByteBuffer audioEndMessage = binaryMessageCreator.createBinaryMessage(AUDIO, requestId, WAV, new byte[0], 0);
+            ByteBuffer audioEndMessage = binaryMessageCreator.createBinaryMessage(AUDIO, requestId, WAV, new byte[0], sampleRate, 0);
             sendBinaryMessage(audioEndMessage);
             log.info("Sent " + chunksSent + " audio chunks");
         } catch (Exception ex) {

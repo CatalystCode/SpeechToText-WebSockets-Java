@@ -1,5 +1,7 @@
 package com.github.catalystcode.fortis.speechtotext.utils;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 import static java.nio.ByteBuffer.wrap;
@@ -8,7 +10,7 @@ import static java.nio.ByteOrder.LITTLE_ENDIAN;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 public final class RiffHeader {
-    public static final int RIFF_HEADER_LENGHT = 44;
+    public static final int RIFF_HEADER_LENGTH = 44;
     private static final int FORMAT_WAVE = 0x57415645;
     private static final int CHUNKID_RIFF = 0x52494646;
     private static final int SUBCHUNK1ID_FMT = 0x666d7420;
@@ -30,7 +32,7 @@ public final class RiffHeader {
     public final int subChunk2Size;
 
     public RiffHeader(byte[] wavBytes) {
-        ByteBuffer waveHeader = wrap(wavBytes, 0, RIFF_HEADER_LENGHT);
+        ByteBuffer waveHeader = wrap(wavBytes, 0, RIFF_HEADER_LENGTH);
 
         waveHeader.order(BIG_ENDIAN);
         chunkId = waveHeader.getInt();
@@ -86,5 +88,14 @@ public final class RiffHeader {
         buf.putInt(SUBCHUNK2ID_DATA);
         buf.order(LITTLE_ENDIAN);
         buf.putInt(subChunk2Size);
+    }
+
+    public static RiffHeader fromStream(InputStream wavStream) throws IOException {
+        byte[] header = new byte[RIFF_HEADER_LENGTH];
+        int read = wavStream.read(header);
+        if (read != RIFF_HEADER_LENGTH) {
+            throw new IllegalArgumentException("Unable to read " + RIFF_HEADER_LENGTH + " bytes of RIFF header from stream");
+        }
+        return new RiffHeader(header);
     }
 }

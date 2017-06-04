@@ -28,7 +28,10 @@ public class SpeechToTextWebsocketsDemo {
 
         SpeechTranscriber transcriber = new SpeechTranscriber(config);
         try (InputStream wavStream = new BufferedInputStream(new FileInputStream(wavPath))) {
-            transcriber.transcribe(wavStream, System.out::println);
+            transcriber.transcribe(
+                wavStream,
+                message -> System.out.println("Phrase: " + message),
+                hypothesis -> System.out.println("Hypothesis: " + hypothesis));
         }
     }
 }
