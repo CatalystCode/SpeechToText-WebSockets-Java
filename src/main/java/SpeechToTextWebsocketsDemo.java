@@ -28,10 +28,15 @@ public class SpeechToTextWebsocketsDemo {
 
         WavTranscriber transcriber = new WavTranscriber(config);
         try (InputStream wavStream = new BufferedInputStream(new FileInputStream(wavPath))) {
-            transcriber.transcribe(
-                wavStream,
-                message -> System.out.println("Phrase: " + message),
-                hypothesis -> System.out.println("Hypothesis: " + hypothesis));
+            transcriber.transcribe(wavStream, SpeechToTextWebsocketsDemo::onPhrase, SpeechToTextWebsocketsDemo::onHypothesis);
         }
+    }
+
+    private static void onPhrase(String phrase) {
+        System.out.println("Phrase: " + phrase);
+    }
+
+    private static void onHypothesis(String hypothesis) {
+        System.out.println("Hypothesis: " + hypothesis);
     }
 }
