@@ -13,6 +13,7 @@ export OXFORD_SPEECH_TOKEN="..."
 # stream the audio and transcribe
 sbt "runMain SpeechToTextWebsocketsDemo examples/data/batman.wav"
 sbt "runMain SpeechToTextWebsocketsDemo examples/data/hall.mp3"
+sbt "runMain SpeechToTextWebsocketsDemo http://bbcwssc.ic.llnwd.net/stream/bbcwssc_mp1_ws-einws en-GB .mp3"
 ```
 
 ## Release process ##
