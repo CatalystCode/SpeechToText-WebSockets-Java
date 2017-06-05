@@ -1,5 +1,4 @@
 import com.github.catalystcode.fortis.speechtotext.Transcriber;
-import com.github.catalystcode.fortis.speechtotext.WavTranscriber;
 import com.github.catalystcode.fortis.speechtotext.config.SpeechType;
 import com.github.catalystcode.fortis.speechtotext.config.OutputFormat;
 import com.github.catalystcode.fortis.speechtotext.config.SpeechServiceConfig;
@@ -27,15 +26,8 @@ public class SpeechToTextWebsocketsDemo {
 
         SpeechServiceConfig config = new SpeechServiceConfig(subscriptionKey, speechType, outputFormat, locale);
 
-        Transcriber transcriber;
-        if (audioPath.endsWith(".wav")) {
-            transcriber = new WavTranscriber(config);
-        } else {
-            throw new IllegalArgumentException("Unsupported audio file type: " + audioPath);
-        }
-
         try (InputStream audioStream = new BufferedInputStream(new FileInputStream(audioPath))) {
-            transcriber.transcribe(audioStream, SpeechToTextWebsocketsDemo::onPhrase, SpeechToTextWebsocketsDemo::onHypothesis);
+            Transcriber.create(audioPath, config).transcribe(audioStream, SpeechToTextWebsocketsDemo::onPhrase, SpeechToTextWebsocketsDemo::onHypothesis);
         }
     }
 
