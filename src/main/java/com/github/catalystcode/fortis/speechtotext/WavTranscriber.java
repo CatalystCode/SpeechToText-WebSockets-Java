@@ -6,20 +6,14 @@ import com.github.catalystcode.fortis.speechtotext.utils.Func;
 import com.github.catalystcode.fortis.speechtotext.utils.RiffHeader;
 import com.github.catalystcode.fortis.speechtotext.websocket.MessageSender;
 import com.github.catalystcode.fortis.speechtotext.websocket.SpeechServiceClient;
-import com.github.catalystcode.fortis.speechtotext.websocket.nv.NvSpeechServiceClient;
 
 import java.io.InputStream;
 
-public class WavTranscriber implements Transcriber {
+class WavTranscriber implements Transcriber {
     private final SpeechServiceConfig config;
     private final SpeechServiceClient client;
 
-    public WavTranscriber(SpeechServiceConfig config) {
-        this(config, new NvSpeechServiceClient());
-    }
-
-    @SuppressWarnings("WeakerAccess")
-    public WavTranscriber(SpeechServiceConfig config, SpeechServiceClient client) {
+    WavTranscriber(SpeechServiceConfig config, SpeechServiceClient client) {
         this.config = config;
         this.client = client;
     }
