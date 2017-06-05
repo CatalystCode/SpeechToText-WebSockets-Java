@@ -1,4 +1,4 @@
-import com.github.catalystcode.fortis.speechtotext.SpeechTranscriber;
+import com.github.catalystcode.fortis.speechtotext.WavTranscriber;
 import com.github.catalystcode.fortis.speechtotext.config.SpeechType;
 import com.github.catalystcode.fortis.speechtotext.config.OutputFormat;
 import com.github.catalystcode.fortis.speechtotext.config.SpeechServiceConfig;
@@ -26,7 +26,7 @@ public class SpeechToTextWebsocketsDemo {
 
         SpeechServiceConfig config = new SpeechServiceConfig(subscriptionKey, speechType, outputFormat, locale);
 
-        SpeechTranscriber transcriber = new SpeechTranscriber(config);
+        WavTranscriber transcriber = new WavTranscriber(config);
         try (InputStream wavStream = new BufferedInputStream(new FileInputStream(wavPath))) {
             transcriber.transcribe(
                 wavStream,

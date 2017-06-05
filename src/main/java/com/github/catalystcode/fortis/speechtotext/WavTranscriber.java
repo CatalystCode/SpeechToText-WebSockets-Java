@@ -10,16 +10,16 @@ import com.github.catalystcode.fortis.speechtotext.websocket.nv.NvSpeechServiceC
 
 import java.io.InputStream;
 
-public class SpeechTranscriber {
+public class WavTranscriber {
     private final SpeechServiceConfig config;
     private final SpeechServiceClient client;
 
-    public SpeechTranscriber(SpeechServiceConfig config) {
+    public WavTranscriber(SpeechServiceConfig config) {
         this(config, new NvSpeechServiceClient());
     }
 
     @SuppressWarnings("WeakerAccess")
-    public SpeechTranscriber(SpeechServiceConfig config, SpeechServiceClient client) {
+    public WavTranscriber(SpeechServiceConfig config, SpeechServiceClient client) {
         this.config = config;
         this.client = client;
     }
