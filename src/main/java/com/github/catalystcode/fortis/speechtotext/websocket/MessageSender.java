@@ -48,7 +48,6 @@ public abstract class MessageSender {
                 ByteBuffer audioChunkMessage = binaryMessageCreator.createBinaryMessage(AUDIO, requestId, WAV, buf, sampleRate, read);
                 sendBinaryMessage(audioChunkMessage);
                 chunksSent++;
-                log.debug("Sent audio chunk " + chunksSent + " with " + read + " bytes");
             }
             log.info("Sent " + chunksSent + " audio chunks");
         } catch (Exception ex) {
