@@ -13,6 +13,7 @@ autoScalaLibrary := false
 libraryDependencies ++= Seq(
   "log4j" % "log4j" % "1.2.17",
   "org.json" % "json" % "20170516",
+  "com.googlecode.soundlibs" % "jlayer" % "1.0.1-1",
   "com.neovisionaries" % "nv-websocket-client" % "2.2"
 )
 

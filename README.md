@@ -12,6 +12,7 @@ export OXFORD_SPEECH_TOKEN="..."
 
 # stream the audio and transcribe
 sbt "runMain SpeechToTextWebsocketsDemo examples/data/batman.wav"
+sbt "runMain SpeechToTextWebsocketsDemo examples/data/hall.mp3"
 ```
 
 ## Release process ##

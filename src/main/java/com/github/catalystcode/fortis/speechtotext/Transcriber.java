@@ -19,6 +19,10 @@ public interface Transcriber {
             return new WavTranscriber(config, client);
         }
 
+        if (audioPath.endsWith(".mp3")) {
+            return new Mp3Transcriber(config, client);
+        }
+
         throw new IllegalArgumentException("Unsupported audio file type: " + audioPath);
     }
 }
