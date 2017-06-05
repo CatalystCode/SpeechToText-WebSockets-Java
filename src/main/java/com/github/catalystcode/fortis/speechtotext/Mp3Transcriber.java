@@ -16,7 +16,7 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static com.github.catalystcode.fortis.speechtotext.utils.Units.KB;
+import static com.github.catalystcode.fortis.speechtotext.utils.Environment.getMp3BufferSize;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.file.Files.createTempFile;
 import static java.nio.file.Files.deleteIfExists;
@@ -31,7 +31,7 @@ class Mp3Transcriber implements Transcriber {
     Mp3Transcriber(SpeechServiceConfig config, SpeechServiceClient client) {
         this.config = config;
         this.client = client;
-        this.bufferSize = 256 * KB;
+        this.bufferSize = getMp3BufferSize();
     }
 
     @Override

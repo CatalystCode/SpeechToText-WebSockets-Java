@@ -1,6 +1,8 @@
 package com.github.catalystcode.fortis.speechtotext.utils;
 
 import static com.github.catalystcode.fortis.speechtotext.constants.EnvironmentVariables.*;
+import static com.github.catalystcode.fortis.speechtotext.utils.Units.KB;
+import static java.lang.Integer.parseInt;
 
 public final class Environment {
     private Environment() {}
@@ -23,6 +25,10 @@ public final class Environment {
 
     public static String getDeviceVersion() {
         return getenv(DEVICE_VERSION, "0.0.1");
+    }
+
+    public static int getMp3BufferSize() {
+        return parseInt(getenv(MP3_BUFFER_SIZE, String.valueOf(256 * KB)));
     }
 
     private static String getenv(String key, String defaultValue) {
