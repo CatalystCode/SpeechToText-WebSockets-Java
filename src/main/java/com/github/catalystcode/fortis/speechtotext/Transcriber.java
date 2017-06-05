@@ -1,20 +1,44 @@
 package com.github.catalystcode.fortis.speechtotext;
 
 import com.github.catalystcode.fortis.speechtotext.config.SpeechServiceConfig;
+import com.github.catalystcode.fortis.speechtotext.lifecycle.MessageReceiver;
 import com.github.catalystcode.fortis.speechtotext.utils.Func;
+import com.github.catalystcode.fortis.speechtotext.websocket.MessageSender;
 import com.github.catalystcode.fortis.speechtotext.websocket.SpeechServiceClient;
 import com.github.catalystcode.fortis.speechtotext.websocket.nv.NvSpeechServiceClient;
 
+import java.io.IOException;
 import java.io.InputStream;
 
-public interface Transcriber {
-    void transcribe(InputStream audioStream, Func<String> onResult, Func<String> onHypothesis) throws Exception;
+public abstract class Transcriber {
+    protected final SpeechServiceConfig config;
+    private final SpeechServiceClient client;
 
-    static Transcriber create(String audioPath, SpeechServiceConfig config) {
+    Transcriber(SpeechServiceConfig config, SpeechServiceClient client) {
+        this.config = config;
+        this.client = client;
+    }
+
+    public void transcribe(InputStream audioStream, Func<String> onResult, Func<String> onHypothesis) throws Exception {
+        MessageReceiver receiver = new MessageReceiver(onResult, onHypothesis, client.getEndLatch());
+        try {
+            MessageSender sender = client.start(config, receiver);
+            receiver.setSender(sender);
+            sender.sendConfiguration();
+            sendAudio(audioStream, sender);
+            client.awaitEnd();
+        } finally {
+            client.stop();
+        }
+    }
+
+    protected abstract void sendAudio(InputStream audioStream, MessageSender sender) throws IOException;
+
+    public static Transcriber create(String audioPath, SpeechServiceConfig config) {
         return create(audioPath, config, new NvSpeechServiceClient());
     }
 
-    static Transcriber create(String audioPath, SpeechServiceConfig config, SpeechServiceClient client) {
+    private static Transcriber create(String audioPath, SpeechServiceConfig config, SpeechServiceClient client) {
         if (audioPath.endsWith(".wav")) {
             return new WavTranscriber(config, client);
         }

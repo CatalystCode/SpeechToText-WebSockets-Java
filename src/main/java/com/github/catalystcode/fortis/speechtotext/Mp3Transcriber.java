@@ -1,8 +1,6 @@
 package com.github.catalystcode.fortis.speechtotext;
 
 import com.github.catalystcode.fortis.speechtotext.config.SpeechServiceConfig;
-import com.github.catalystcode.fortis.speechtotext.lifecycle.MessageReceiver;
-import com.github.catalystcode.fortis.speechtotext.utils.Func;
 import com.github.catalystcode.fortis.speechtotext.websocket.MessageSender;
 import com.github.catalystcode.fortis.speechtotext.websocket.SpeechServiceClient;
 import javazoom.jl.converter.Converter;
@@ -20,50 +18,38 @@ import static java.nio.ByteBuffer.allocate;
 import static java.nio.file.Files.createTempFile;
 import static java.nio.file.Files.deleteIfExists;
 
-class Mp3Transcriber implements Transcriber {
+class Mp3Transcriber extends Transcriber {
     private static final Logger log = Logger.getLogger(Mp3Transcriber.class);
 
-    private final SpeechServiceConfig config;
-    private final SpeechServiceClient client;
     private final int bufferSize;
 
     Mp3Transcriber(SpeechServiceConfig config, SpeechServiceClient client) {
-        this.config = config;
-        this.client = client;
+        super(config, client);
         this.bufferSize = getMp3BufferSize();
     }
 
     @Override
-    public void transcribe(InputStream mp3Stream, Func<String> onResult, Func<String> onHypothesis) throws Exception {
-        MessageReceiver receiver = new MessageReceiver(onResult, onHypothesis, client.getEndLatch());
-        try {
-            MessageSender sender = client.start(config, receiver);
-            receiver.setSender(sender);
-            sender.sendConfiguration();
-            byte[] streamBuf = new byte[bufferSize];
-            ByteBuffer mp3Buf = allocate(bufferSize);
-            int mp3BufPos = 0;
-            int read;
-            while ((read = mp3Stream.read(streamBuf)) != -1) {
-                if (mp3BufPos + read >= bufferSize) {
-                    log.info("Buffer full, starting to process " + mp3BufPos + " bytes");
-                    String mp3Path = newTempFile(".mp3");
-                    writeBytes(mp3Path, mp3Buf, mp3BufPos);
-                    sendAudioAsync(mp3Path, sender);
-                    mp3Buf.clear();
-                    mp3Buf.put(streamBuf, 0, read);
-                    mp3BufPos = read;
-                } else {
-                    mp3Buf.put(streamBuf, 0, read);
-                    mp3BufPos += read;
-                    log.debug("Buffered " + mp3BufPos + "/" + bufferSize + " bytes from MP3 stream");
-                }
+    protected void sendAudio(InputStream mp3Stream, MessageSender sender) throws IOException {
+        byte[] streamBuf = new byte[bufferSize];
+        ByteBuffer mp3Buf = allocate(bufferSize);
+        int mp3BufPos = 0;
+        int read;
+        while ((read = mp3Stream.read(streamBuf)) != -1) {
+            if (mp3BufPos + read >= bufferSize) {
+                log.info("Buffer full, starting to process " + mp3BufPos + " bytes");
+                String mp3Path = newTempFile(".mp3");
+                writeBytes(mp3Path, mp3Buf, mp3BufPos);
+                sendAudioAsync(mp3Path, sender);
+                mp3Buf.clear();
+                mp3Buf.put(streamBuf, 0, read);
+                mp3BufPos = read;
+            } else {
+                mp3Buf.put(streamBuf, 0, read);
+                mp3BufPos += read;
+                log.debug("Buffered " + mp3BufPos + "/" + bufferSize + " bytes from MP3 stream");
             }
-            sender.sendAudioEnd();
-            client.awaitEnd();
-        } finally {
-            client.stop();
         }
+        sender.sendAudioEnd();
     }
 
     private static void convertAudio(String mp3Path, String wavPath) throws JavaLayerException {
