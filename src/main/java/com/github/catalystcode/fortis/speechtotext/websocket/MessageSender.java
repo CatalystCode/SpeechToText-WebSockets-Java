@@ -100,7 +100,7 @@ public abstract class MessageSender {
             sourceFormat.isBigEndian()), sourceAudioStream);
     }
 
-    private static void skipRiffHeader(InputStream wavStream) throws IOException, UnsupportedAudioFileException {
+    private static void skipRiffHeader(InputStream wavStream) throws IOException {
         RiffHeader.fromStream(wavStream);
     }
 

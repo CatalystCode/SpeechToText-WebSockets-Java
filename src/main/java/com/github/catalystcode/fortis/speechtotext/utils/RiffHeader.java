@@ -94,7 +94,7 @@ public final class RiffHeader {
         byte[] header = new byte[RIFF_HEADER_LENGTH];
         int read = wavStream.read(header);
         if (read != RIFF_HEADER_LENGTH) {
-            throw new IllegalArgumentException("Unable to read " + RIFF_HEADER_LENGTH + " bytes of RIFF header from stream");
+            throw new IOException("Unable to read " + RIFF_HEADER_LENGTH + " bytes of RIFF header from stream");
         }
         return new RiffHeader(header);
     }
