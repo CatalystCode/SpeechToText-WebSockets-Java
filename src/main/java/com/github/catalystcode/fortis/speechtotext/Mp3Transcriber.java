@@ -46,7 +46,7 @@ class Mp3Transcriber implements Transcriber {
             int read;
             while ((read = mp3Stream.read(streamBuf)) != -1) {
                 if (mp3BufPos + read >= bufferSize) {
-                    log.debug("Buffer full, starting to process " + mp3BufPos + " bytes");
+                    log.info("Buffer full, starting to process " + mp3BufPos + " bytes");
                     String mp3Path = newTempFile(".mp3");
                     writeBytes(mp3Path, mp3Buf, mp3BufPos);
                     sendAudioAsync(mp3Path, sender);
