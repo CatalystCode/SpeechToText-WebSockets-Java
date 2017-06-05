@@ -25,11 +25,12 @@ public class SpeechToTextWebsocketsDemo {
         final OutputFormat outputFormat = OutputFormat.SIMPLE;
         final String audioPath = args[0];
         final Locale locale = new Locale(args.length > 1 ? args[1] : "en-US");
+        final String audioType = args.length > 2 ? args[2] : audioPath;
 
         SpeechServiceConfig config = new SpeechServiceConfig(subscriptionKey, speechType, outputFormat, locale);
 
         try (InputStream audioStream = openStream(audioPath)) {
-            Transcriber.create(audioPath, config).transcribe(audioStream, SpeechToTextWebsocketsDemo::onPhrase, SpeechToTextWebsocketsDemo::onHypothesis);
+            Transcriber.create(audioType, config).transcribe(audioStream, SpeechToTextWebsocketsDemo::onPhrase, SpeechToTextWebsocketsDemo::onHypothesis);
         }
     }
 

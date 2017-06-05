@@ -11,22 +11,27 @@ import javazoom.jl.decoder.JavaLayerException;
 import org.apache.log4j.Logger;
 
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static com.github.catalystcode.fortis.speechtotext.utils.Units.KB;
+import static java.nio.ByteBuffer.allocate;
 import static java.nio.file.Files.createTempFile;
 import static java.nio.file.Files.deleteIfExists;
 
 class Mp3Transcriber implements Transcriber {
-    private static final int MP3_BUFFER_SIZE = 512 * 1024;
-    private final static Logger log = Logger.getLogger(Mp3Transcriber.class);
+    private static final Logger log = Logger.getLogger(Mp3Transcriber.class);
 
     private final SpeechServiceConfig config;
     private final SpeechServiceClient client;
+    private final int bufferSize;
 
     Mp3Transcriber(SpeechServiceConfig config, SpeechServiceClient client) {
         this.config = config;
         this.client = client;
+        this.bufferSize = 256 * KB;
     }
 
     @Override
@@ -36,12 +41,24 @@ class Mp3Transcriber implements Transcriber {
             MessageSender sender = client.start(config, receiver);
             receiver.setSender(sender);
             sender.sendConfiguration();
-            byte[] buf = new byte[MP3_BUFFER_SIZE];
+            byte[] streamBuf = new byte[bufferSize];
+            ByteBuffer mp3Buf = allocate(bufferSize);
+            int mp3BufPos = 0;
             int read;
-            while ((read = mp3Stream.read(buf)) != -1) {
-                String mp3Path = newTempFile(".mp3");
-                writeBytes(mp3Path, buf, read);
-                sendAudioAsync(mp3Path, sender);
+            while ((read = mp3Stream.read(streamBuf)) != -1) {
+                if (mp3BufPos + read >= bufferSize) {
+                    log.debug("Buffer full, starting to process " + mp3BufPos + " bytes");
+                    String mp3Path = newTempFile(".mp3");
+                    writeBytes(mp3Path, mp3Buf, mp3BufPos);
+                    sendAudioAsync(mp3Path, sender);
+                    mp3Buf.clear();
+                    mp3Buf.put(streamBuf, 0, read);
+                    mp3BufPos = read;
+                } else {
+                    mp3Buf.put(streamBuf, 0, read);
+                    mp3BufPos += read;
+                    log.debug("Buffered " + mp3BufPos + "/" + bufferSize + " bytes from MP3 stream");
+                }
             }
             sender.sendAudioEnd();
             client.awaitEnd();
@@ -51,13 +68,17 @@ class Mp3Transcriber implements Transcriber {
     }
 
     private static void convertAudio(String mp3Path, String wavPath) throws JavaLayerException {
+        log.debug("Starting to convert " + mp3Path + " to " + wavPath);
         new Converter().convert(mp3Path, wavPath);
         log.debug("Converted " + mp3Path + " to " + wavPath);
     }
 
-    private static void writeBytes(String path, byte[] buf, int length) throws IOException {
-        try (OutputStream outputStream = new FileOutputStream(path)) {
-            outputStream.write(buf, 0, length);
+    private static void writeBytes(String path, ByteBuffer buf, int length) throws IOException {
+        try (FileOutputStream outputStream = new FileOutputStream(path)) {
+            try (FileChannel channel = outputStream.getChannel()) {
+                buf.flip();
+                channel.write(buf);
+            }
         }
         log.debug("Wrote " + length + " bytes to " + path);
     }
@@ -81,7 +102,7 @@ class Mp3Transcriber implements Transcriber {
 
             try (InputStream wavStream = new BufferedInputStream(new FileInputStream(wavPath))) {
                 sender.sendAudio(wavStream, getSampleRate(wavStream));
-            } catch (IOException ex) {
+            } catch (Exception ex) {
                 log.error("Error sending audio", ex);
             } finally {
                 deleteTempFile(mp3Path);
