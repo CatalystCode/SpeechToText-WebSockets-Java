@@ -44,8 +44,14 @@ public abstract class MessageSender {
         log.info("Sent speech config: " + config);
     }
 
-    public final void sendAudio(InputStream wavStream) throws IOException, UnsupportedAudioFileException {
-        AudioInputStream pcmStream = adjustAudioEncoding(wavStream);
+    public final void sendAudio(InputStream wavStream) {
+        AudioInputStream pcmStream;
+        try {
+            pcmStream = adjustAudioEncoding(wavStream);
+        } catch (UnsupportedAudioFileException | IOException ex) {
+            log.error("Problem adjusting audio", ex);
+            return;
+        }
         send16khzMonoPcmAudio(pcmStream);
     }
 
