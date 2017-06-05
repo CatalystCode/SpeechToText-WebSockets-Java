@@ -1,14 +1,16 @@
 import com.github.catalystcode.fortis.speechtotext.Transcriber;
-import com.github.catalystcode.fortis.speechtotext.config.SpeechType;
 import com.github.catalystcode.fortis.speechtotext.config.OutputFormat;
 import com.github.catalystcode.fortis.speechtotext.config.SpeechServiceConfig;
+import com.github.catalystcode.fortis.speechtotext.config.SpeechType;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Locale;
 
 public class SpeechToTextWebsocketsDemo {
@@ -21,14 +23,22 @@ public class SpeechToTextWebsocketsDemo {
         final String subscriptionKey = System.getenv("OXFORD_SPEECH_TOKEN");
         final SpeechType speechType = SpeechType.DICTATION;
         final OutputFormat outputFormat = OutputFormat.SIMPLE;
-        final Locale locale = new Locale("en-US");
         final String audioPath = args[0];
+        final Locale locale = new Locale(args.length > 1 ? args[1] : "en-US");
 
         SpeechServiceConfig config = new SpeechServiceConfig(subscriptionKey, speechType, outputFormat, locale);
 
-        try (InputStream audioStream = new BufferedInputStream(new FileInputStream(audioPath))) {
+        try (InputStream audioStream = openStream(audioPath)) {
             Transcriber.create(audioPath, config).transcribe(audioStream, SpeechToTextWebsocketsDemo::onPhrase, SpeechToTextWebsocketsDemo::onHypothesis);
         }
+    }
+
+    private static InputStream openStream(String audioPath) throws IOException {
+        InputStream inputStream = audioPath.startsWith("http://") || audioPath.startsWith("https://")
+            ? new URL(audioPath).openConnection().getInputStream()
+            : new FileInputStream(audioPath);
+
+        return new BufferedInputStream(inputStream);
     }
 
     private static void onPhrase(String phrase) {
