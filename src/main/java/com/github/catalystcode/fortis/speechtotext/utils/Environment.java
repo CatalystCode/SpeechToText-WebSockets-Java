@@ -28,7 +28,7 @@ public final class Environment {
     }
 
     public static int getMp3BufferSize() {
-        return parseInt(getenv(MP3_BUFFER_SIZE, String.valueOf(96 * KB)));
+        return parseInt(getenv(MP3_BUFFER_SIZE, String.valueOf(64 * KB)));
     }
 
     private static String getenv(String key, String defaultValue) {
