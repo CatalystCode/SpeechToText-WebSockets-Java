@@ -45,6 +45,9 @@ public class WavTranscriber implements Transcriber {
     }
 
     private void sendAudioAsync(InputStream wavStream, int sampleRate, MessageSender sender) {
-        new Thread(() -> sender.sendAudio(wavStream, sampleRate)).run();
+        new Thread(() -> {
+            sender.sendAudio(wavStream, sampleRate);
+            sender.sendAudioEnd();
+        }).run();
     }
 }

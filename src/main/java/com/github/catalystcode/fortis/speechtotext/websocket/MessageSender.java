@@ -14,6 +14,7 @@ import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServic
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceLimitations.MAX_BYTES_PER_AUDIO_CHUNK;
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceLimitations.SAMPLE_RATE;
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServicePaths.*;
+import static com.github.catalystcode.fortis.speechtotext.messages.AudioEndMessageCreator.createAudioEndMessage;
 import static com.github.catalystcode.fortis.speechtotext.messages.TextMessageCreator.createTextMessage;
 import static com.github.catalystcode.fortis.speechtotext.utils.ProtocolUtils.newGuid;
 
@@ -49,15 +50,19 @@ public abstract class MessageSender {
                 chunksSent++;
                 log.debug("Sent audio chunk " + chunksSent + " with " + read + " bytes");
             }
-            ByteBuffer audioEndMessage = binaryMessageCreator.createBinaryMessage(AUDIO, requestId, WAV, new byte[0], sampleRate, 0);
-            sendBinaryMessage(audioEndMessage);
             log.info("Sent " + chunksSent + " audio chunks");
         } catch (Exception ex) {
             audioTelemetry.recordAudioFailed(ex.getMessage());
             throw new RuntimeException(ex);
-        } finally {
-            audioTelemetry.recordAudioEnded();
         }
+    }
+
+    public final void sendAudioEnd() {
+        AudioTelemetry audioTelemetry = AudioTelemetry.forId(requestId);
+        ByteBuffer audioEndMessage = createAudioEndMessage(requestId);
+        sendBinaryMessage(audioEndMessage);
+        log.debug("Sent explicit end-of-audio marker");
+        audioTelemetry.recordAudioEnded();
     }
 
     private static int computeBufferSize(int sampleRate) {

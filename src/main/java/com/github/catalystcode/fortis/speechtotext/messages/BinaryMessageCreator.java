@@ -12,7 +12,15 @@ import static java.nio.ByteBuffer.allocate;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class BinaryMessageCreator {
-    private boolean isFirstMessage = true;
+    private boolean isFirstMessage;
+
+    public BinaryMessageCreator() {
+        this(true);
+    }
+
+    BinaryMessageCreator(boolean isFirstMessage) {
+        this.isFirstMessage = isFirstMessage;
+    }
 
     public ByteBuffer createBinaryMessage(String path, String requestId, String contentType, byte[] wavBytes, int sampleRate, int count) {
         byte[] headers = formatHeaders(path, requestId, contentType);
