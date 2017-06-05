@@ -3,7 +3,6 @@ package com.github.catalystcode.fortis.speechtotext;
 import com.github.catalystcode.fortis.speechtotext.config.SpeechServiceConfig;
 import com.github.catalystcode.fortis.speechtotext.lifecycle.MessageReceiver;
 import com.github.catalystcode.fortis.speechtotext.utils.Func;
-import com.github.catalystcode.fortis.speechtotext.utils.RiffHeader;
 import com.github.catalystcode.fortis.speechtotext.websocket.MessageSender;
 import com.github.catalystcode.fortis.speechtotext.websocket.SpeechServiceClient;
 import javazoom.jl.converter.Converter;
@@ -101,7 +100,7 @@ class Mp3Transcriber implements Transcriber {
             }
 
             try (InputStream wavStream = new BufferedInputStream(new FileInputStream(wavPath))) {
-                sender.sendAudio(wavStream, getSampleRate(wavStream));
+                sender.sendAudio(wavStream);
             } catch (Exception ex) {
                 log.error("Error sending audio", ex);
             } finally {
@@ -109,13 +108,6 @@ class Mp3Transcriber implements Transcriber {
                 deleteTempFile(wavPath);
             }
         }).run();
-    }
-
-    private static int getSampleRate(InputStream wavStream) throws IOException {
-        RiffHeader header = RiffHeader.fromStream(wavStream);
-        int sampleRate = header.sampleRate;
-        log.debug("Got WAV stream with sample rate of " + sampleRate + "hz");
-        return sampleRate;
     }
 
     private String newTempFile(String suffix) throws IOException {

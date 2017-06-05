@@ -11,6 +11,6 @@ public final class AudioEndMessageCreator {
     private static final BinaryMessageCreator binaryMessageCreator = new BinaryMessageCreator(false);
 
     public static ByteBuffer createAudioEndMessage(String requestId) {
-        return binaryMessageCreator.createBinaryMessage(AUDIO, requestId, WAV, new byte[0], 0, 0);
+        return binaryMessageCreator.createBinaryMessage(AUDIO, requestId, WAV, new byte[0], 0);
     }
 }
