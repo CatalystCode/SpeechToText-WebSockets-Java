@@ -20,6 +20,7 @@ sbt "runMain SpeechToTextWebsocketsDemo http://bbcwssc.ic.llnwd.net/stream/bbcws
 
 1. Configure your credentials via the `SONATYPE_USER` and `SONATYPE_PASSWORD` environment variables.
 2. Update `version.sbt`
-3. Run `sbt sonatypeOpen "enter staging description here"`
-4. Run `sbt publishSigned`
-5. Run `sbt sonatypeRelease`
+3. Enter the SBT shell: `sbt`
+4. Run `sonatypeOpen "enter staging description here"`
+5. Run `publishSigned`
+6. Run `sonatypeRelease`
