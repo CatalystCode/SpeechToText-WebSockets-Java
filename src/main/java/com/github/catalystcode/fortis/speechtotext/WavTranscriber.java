@@ -10,7 +10,7 @@ import com.github.catalystcode.fortis.speechtotext.websocket.nv.NvSpeechServiceC
 
 import java.io.InputStream;
 
-public class WavTranscriber {
+public class WavTranscriber implements Transcriber {
     private final SpeechServiceConfig config;
     private final SpeechServiceClient client;
 
@@ -24,6 +24,7 @@ public class WavTranscriber {
         this.client = client;
     }
 
+    @Override
     public void transcribe(InputStream wavStream, Func<String> onResult, Func<String> onHypothesis) throws Exception {
         RiffHeader header = RiffHeader.fromStream(wavStream);
         transcribe(wavStream, header.sampleRate, onResult, onHypothesis);
