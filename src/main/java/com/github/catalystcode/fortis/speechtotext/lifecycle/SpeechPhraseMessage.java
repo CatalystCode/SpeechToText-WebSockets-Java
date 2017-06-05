@@ -22,7 +22,8 @@ final class SpeechPhraseMessage {
     private static boolean isSuccess(JSONObject message) {
         String status = message.getString(RECOGNITION_STATUS);
 
-        if (END_OF_DICTATION_STATUS.equalsIgnoreCase(status)) {
+        if (END_OF_DICTATION_STATUS.equalsIgnoreCase(status) ||
+            END_OF_DICTATION_SILENCE_STATUS.equalsIgnoreCase(status)) {
             log.info("Detected end of speech");
             return false;
         }
