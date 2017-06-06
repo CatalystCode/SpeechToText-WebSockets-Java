@@ -16,6 +16,10 @@ sbt "runMain SpeechToTextWebsocketsDemo examples/data/hall.mp3"
 sbt "runMain SpeechToTextWebsocketsDemo http://bbcwssc.ic.llnwd.net/stream/bbcwssc_mp1_ws-einws en-US .mp3"
 ```
 
+If you're consuming the library via Maven, make sure to also add the Tritonus (PCM audio conversion) jars to the classpath:
+- [tritonus_remaining-0.3.6.jar](https://github.com/CatalystCode/SpeechToText-WebSockets-Java/raw/master/lib/tritonus_remaining-0.3.6.jar)
+- [tritonus_share-0.3.6.jar](https://github.com/CatalystCode/SpeechToText-WebSockets-Java/raw/master/lib/tritonus_share-0.3.6.jar)
+
 ## Release process ##
 
 1. Configure your credentials via the `SONATYPE_USER` and `SONATYPE_PASSWORD` environment variables.
