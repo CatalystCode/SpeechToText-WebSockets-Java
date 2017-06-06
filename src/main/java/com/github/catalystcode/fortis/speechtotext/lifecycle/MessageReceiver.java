@@ -1,14 +1,14 @@
 package com.github.catalystcode.fortis.speechtotext.lifecycle;
 
-import com.github.catalystcode.fortis.speechtotext.telemetry.CallsTelemetry;
-import com.github.catalystcode.fortis.speechtotext.utils.Func;
 import com.github.catalystcode.fortis.speechtotext.messages.MessageParser;
+import com.github.catalystcode.fortis.speechtotext.telemetry.CallsTelemetry;
 import com.github.catalystcode.fortis.speechtotext.websocket.MessageSender;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.function.Consumer;
 
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceMessageHeaders.PATH;
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceMessageHeaders.REQUEST_ID;
@@ -17,12 +17,12 @@ import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServic
 
 public class MessageReceiver {
     private static final Logger log = Logger.getLogger(MessageReceiver.class);
-    private final Func<String> onResult;
-    private final Func<String> onHypothesis;
+    private final Consumer<String> onResult;
+    private final Consumer<String> onHypothesis;
     private final CountDownLatch endLatch;
     private MessageSender sender;
 
-    public MessageReceiver(Func<String> onResult, Func<String> onHypothesis, CountDownLatch endLatch) {
+    public MessageReceiver(Consumer<String> onResult, Consumer<String> onHypothesis, CountDownLatch endLatch) {
         this.onResult = onResult;
         this.onHypothesis = onHypothesis;
         this.endLatch = endLatch;

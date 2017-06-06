@@ -1,8 +1,9 @@
 package com.github.catalystcode.fortis.speechtotext.lifecycle;
 
-import com.github.catalystcode.fortis.speechtotext.utils.Func;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
+
+import java.util.function.Consumer;
 
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceMessageFields.*;
 
@@ -10,13 +11,13 @@ final class SpeechPhraseMessage {
     private static final Logger log = Logger.getLogger(SpeechPhraseMessage.class);
     private SpeechPhraseMessage() {}
 
-    static void handle(JSONObject message, Func<String> onResult) {
+    static void handle(JSONObject message, Consumer<String> onResult) {
         if (!isSuccess(message)) {
             return;
         }
 
         String displayText = message.getString(DISPLAY_TEXT);
-        onResult.call(displayText);
+        onResult.accept(displayText);
     }
 
     private static boolean isSuccess(JSONObject message) {

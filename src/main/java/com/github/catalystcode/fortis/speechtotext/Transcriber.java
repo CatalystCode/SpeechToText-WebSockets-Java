@@ -2,13 +2,13 @@ package com.github.catalystcode.fortis.speechtotext;
 
 import com.github.catalystcode.fortis.speechtotext.config.SpeechServiceConfig;
 import com.github.catalystcode.fortis.speechtotext.lifecycle.MessageReceiver;
-import com.github.catalystcode.fortis.speechtotext.utils.Func;
 import com.github.catalystcode.fortis.speechtotext.websocket.MessageSender;
 import com.github.catalystcode.fortis.speechtotext.websocket.SpeechServiceClient;
 import com.github.catalystcode.fortis.speechtotext.websocket.nv.NvSpeechServiceClient;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.function.Consumer;
 
 public abstract class Transcriber {
     protected final SpeechServiceConfig config;
@@ -19,7 +19,7 @@ public abstract class Transcriber {
         this.client = client;
     }
 
-    public void transcribe(InputStream audioStream, Func<String> onResult, Func<String> onHypothesis) throws Exception {
+    public void transcribe(InputStream audioStream, Consumer<String> onResult, Consumer<String> onHypothesis) throws Exception {
         MessageReceiver receiver = new MessageReceiver(onResult, onHypothesis, client.getEndLatch());
         try {
             MessageSender sender = client.start(config, receiver);
