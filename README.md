@@ -28,3 +28,7 @@ If you're consuming the library via Maven, make sure to also add the Tritonus (P
 4. Run `sonatypeOpen "enter staging description here"`
 5. Run `publishSigned`
 6. Run `sonatypeRelease`
+
+## Other implementations ##
+
+- [NodeJS](https://github.com/noopkat/ms-bing-speech-service)
