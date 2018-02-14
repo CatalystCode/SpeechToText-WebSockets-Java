@@ -22,7 +22,7 @@ public class SpeechServiceConfig {
 
     public String getConnectionUrl(String connectionId) {
         return host + speechType.endpoint +
-            '?' + LANGUAGE + '=' + locale.toString() +
+            '?' + LANGUAGE + '=' + locale.toLanguageTag() +
             '&' + FORMAT + '=' + outputFormat.value +
             '&' + CONNECTION_ID + '=' + connectionId +
             '&' + SUBSCRIPTION_KEY + '=' + subscriptionKey;
