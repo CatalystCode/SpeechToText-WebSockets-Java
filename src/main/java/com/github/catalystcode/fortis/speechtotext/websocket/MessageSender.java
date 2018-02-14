@@ -56,7 +56,12 @@ public abstract class MessageSender {
     }
 
     private static AudioInputStream adjustAudioEncoding(InputStream sourceWavStream) throws UnsupportedAudioFileException, IOException {
-        AudioInputStream audioPcm = getAudioInputStream(sourceWavStream);
+        AudioInputStream audioPcm;
+        if (sourceWavStream instanceof AudioInputStream) {
+            audioPcm = (AudioInputStream) sourceWavStream;
+        } else {
+            audioPcm = getAudioInputStream(sourceWavStream);
+        }
         AudioInputStream audio16khz = to16khz(audioPcm);
         AudioInputStream audio16khzMono = toMono(audio16khz);
         AudioInputStream audio16khzMonoPcm = toPcm(audio16khzMono);
