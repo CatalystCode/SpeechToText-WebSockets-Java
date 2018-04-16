@@ -37,6 +37,10 @@ public abstract class Transcriber {
     public static Transcriber create(String audioPath, SpeechServiceConfig config) {
         return create(audioPath, config, new NvSpeechServiceClient());
     }
+	
+    public static Transcriber create(SpeechServiceConfig config) {
+        return create(config, new NvSpeechServiceClient());
+    }
 
     private static Transcriber create(String audioPath, SpeechServiceConfig config, SpeechServiceClient client) {
         if (audioPath.endsWith(".wav")) {
@@ -48,5 +52,9 @@ public abstract class Transcriber {
         }
 
         throw new IllegalArgumentException("Unsupported audio file type: " + audioPath);
+    }
+	
+    private static Transcriber create(SpeechServiceConfig config, SpeechServiceClient client) {
+        return new WavTranscriber(config, client);
     }
 }
