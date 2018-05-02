@@ -9,4 +9,6 @@ public final class SpeechServiceMessageFields {
     public static final String END_OF_DICTATION_SILENCE_STATUS = "DictationEndSilenceTimeout";
     public static final String DISPLAY_TEXT = "DisplayText";
     public static final String HYPOTHESIS_TEXT = "Text";
+    public static final String CONTEXT = "context";
+    public static final String SERVICE_TAG = "serviceTag";
 }

@@ -19,12 +19,21 @@ public class MessageReceiver {
     private static final Logger log = Logger.getLogger(MessageReceiver.class);
     private final Consumer<String> onResult;
     private final Consumer<String> onHypothesis;
+    private final Consumer<String> onTurnStart;
+    private final Runnable onTurnEnd;
     private final CountDownLatch endLatch;
     private MessageSender sender;
 
     public MessageReceiver(Consumer<String> onResult, Consumer<String> onHypothesis, CountDownLatch endLatch) {
+        this(onResult, onHypothesis, null, null, endLatch);
+    }
+
+    public MessageReceiver(Consumer<String> onResult, Consumer<String> onHypothesis,
+            Consumer<String> onTurnStart, Runnable onTurnEnd, CountDownLatch endLatch) {
         this.onResult = onResult;
         this.onHypothesis = onHypothesis;
+        this.onTurnStart = onTurnStart;
+        this.onTurnEnd = onTurnEnd;
         this.endLatch = endLatch;
     }
 
@@ -37,12 +46,14 @@ public class MessageReceiver {
         CallsTelemetry.forId(requestId).recordCall(path);
         log.debug("Got message at path " + path + " with payload '" + body + "'");
 
-        if (SPEECH_HYPOTHESIS.equalsIgnoreCase(path)) {
+        if (TURN_START.equalsIgnoreCase(path)) {
+            TurnStartMessage.handle(body, onTurnStart);
+        } else if (SPEECH_HYPOTHESIS.equalsIgnoreCase(path)) {
             SpeechHypothesisMessage.handle(body, onHypothesis);
         } else if (SPEECH_PHRASE.equalsIgnoreCase(path)) {
             SpeechPhraseMessage.handle(body, onResult);
         } else if (TURN_END.equalsIgnoreCase(path)) {
-            TurnEndMessage.handle(sender, endLatch);
+            TurnEndMessage.handle(sender, endLatch, onTurnEnd);
         }
     }
 

@@ -24,13 +24,14 @@ public class SpeechToTextWebsocketsDemo {
         final SpeechType speechType = SpeechType.CONVERSATION;
         final OutputFormat outputFormat = OutputFormat.SIMPLE;
         final String audioPath = args[0];
-        final Locale locale = new Locale(args.length > 1 ? args[1] : "en-US");
+        final Locale locale = Locale.forLanguageTag(args.length > 1 ? args[1] : "en-US");
         final String audioType = args.length > 2 ? args[2] : audioPath;
 
         SpeechServiceConfig config = new SpeechServiceConfig(subscriptionKey, speechType, outputFormat, locale);
 
         try (InputStream audioStream = openStream(audioPath)) {
-            Transcriber.create(audioType, config).transcribe(audioStream, SpeechToTextWebsocketsDemo::onPhrase, SpeechToTextWebsocketsDemo::onHypothesis);
+            Transcriber.create(audioType, config).transcribe(audioStream, SpeechToTextWebsocketsDemo::onPhrase, SpeechToTextWebsocketsDemo::onHypothesis,
+                    SpeechToTextWebsocketsDemo::onTurnStart, SpeechToTextWebsocketsDemo::onTurnEnd);
         }
     }
 
@@ -42,11 +43,19 @@ public class SpeechToTextWebsocketsDemo {
         return new BufferedInputStream(inputStream);
     }
 
+    private static void onTurnEnd() {
+        System.out.println("TurnEnd:");
+    }
+
     private static void onPhrase(String phrase) {
         System.out.println("Phrase: " + phrase);
     }
 
     private static void onHypothesis(String hypothesis) {
         System.out.println("Hypothesis: " + hypothesis);
+    }
+
+    private static void onTurnStart(String serviceTag) {
+        System.out.println("TurnStart: " + serviceTag);
     }
 }

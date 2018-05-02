@@ -20,7 +20,12 @@ public abstract class Transcriber {
     }
 
     public void transcribe(InputStream audioStream, Consumer<String> onResult, Consumer<String> onHypothesis) throws Exception {
-        MessageReceiver receiver = new MessageReceiver(onResult, onHypothesis, client.getEndLatch());
+        transcribe(audioStream, onResult, onHypothesis);
+    }
+
+    public void transcribe(InputStream audioStream, Consumer<String> onResult, Consumer<String> onHypothesis,
+            Consumer<String> onTurnStart, Runnable onTurnEnd) throws Exception {
+        MessageReceiver receiver = new MessageReceiver(onResult, onHypothesis, onTurnStart, onTurnEnd, client.getEndLatch());
         try {
             MessageSender sender = client.start(config, receiver);
             receiver.setSender(sender);
@@ -37,7 +42,7 @@ public abstract class Transcriber {
     public static Transcriber create(String audioPath, SpeechServiceConfig config) {
         return create(audioPath, config, new NvSpeechServiceClient());
     }
-	
+
     public static Transcriber create(SpeechServiceConfig config) {
         return create(config, new NvSpeechServiceClient());
     }
@@ -53,8 +58,9 @@ public abstract class Transcriber {
 
         throw new IllegalArgumentException("Unsupported audio file type: " + audioPath);
     }
-	
+
     private static Transcriber create(SpeechServiceConfig config, SpeechServiceClient client) {
         return new WavTranscriber(config, client);
     }
+
 }
