@@ -9,6 +9,7 @@ import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketFactory;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.function.Consumer;
 
 import static com.github.catalystcode.fortis.speechtotext.utils.ProtocolUtils.newGuid;
 
@@ -21,13 +22,14 @@ public class NvSpeechServiceClient implements SpeechServiceClient {
     }
 
     @Override
-    public MessageSender start(SpeechServiceConfig config, MessageReceiver receiver) throws Exception {
+    public MessageSender start(SpeechServiceConfig config, MessageReceiver receiver, Consumer<Exception> onError)
+            throws Exception {
         String connectionId = newGuid();
         ConnectionTelemetry telemetry = ConnectionTelemetry.forId(connectionId);
 
         WebSocketFactory factory = new WebSocketFactory();
         webSocket = factory.createSocket(config.getConnectionUrl(connectionId));
-        webSocket.addListener(new NvMessageReceiver(socketCloseLatch, receiver, telemetry));
+        webSocket.addListener(new NvMessageReceiver(socketCloseLatch, receiver, telemetry, onError));
         telemetry.recordConnectionStarted();
         webSocket.connect();
         return new NvMessageSender(connectionId, webSocket);

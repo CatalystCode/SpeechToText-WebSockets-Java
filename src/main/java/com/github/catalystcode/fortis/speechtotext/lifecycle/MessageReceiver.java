@@ -14,35 +14,46 @@ import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServic
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServiceMessageHeaders.REQUEST_ID;
 import static com.github.catalystcode.fortis.speechtotext.constants.SpeechServicePaths.*;
 
-
 public class MessageReceiver {
     private static final Logger log = Logger.getLogger(MessageReceiver.class);
     private final Consumer<String> onResult;
     private final Consumer<String> onHypothesis;
+    private final Consumer<Exception> onError;
     private final CountDownLatch endLatch;
     private MessageSender sender;
 
     public MessageReceiver(Consumer<String> onResult, Consumer<String> onHypothesis, CountDownLatch endLatch) {
+        this(onResult, onHypothesis, x -> {
+        }, endLatch);
+    }
+
+    public MessageReceiver(Consumer<String> onResult, Consumer<String> onHypothesis, Consumer<Exception> onError,
+            CountDownLatch endLatch) {
         this.onResult = onResult;
         this.onHypothesis = onHypothesis;
+        this.onError = onError;
         this.endLatch = endLatch;
     }
 
     public void onMessage(String message) {
-        Map<String, String> headers = MessageParser.parseHeaders(message);
-        JSONObject body = MessageParser.parseBody(message);
+        try {
+            Map<String, String> headers = MessageParser.parseHeaders(message);
+            JSONObject body = MessageParser.parseBody(message);
 
-        String path = headers.get(PATH);
-        String requestId = headers.get(REQUEST_ID);
-        CallsTelemetry.forId(requestId).recordCall(path);
-        log.debug("Got message at path " + path + " with payload '" + body + "'");
+            String path = headers.get(PATH);
+            String requestId = headers.get(REQUEST_ID);
+            CallsTelemetry.forId(requestId).recordCall(path);
+            log.debug("Got message at path " + path + " with payload '" + body + "'");
 
-        if (SPEECH_HYPOTHESIS.equalsIgnoreCase(path)) {
-            SpeechHypothesisMessage.handle(body, onHypothesis);
-        } else if (SPEECH_PHRASE.equalsIgnoreCase(path)) {
-            SpeechPhraseMessage.handle(body, onResult);
-        } else if (TURN_END.equalsIgnoreCase(path)) {
-            TurnEndMessage.handle(sender, endLatch);
+            if (SPEECH_HYPOTHESIS.equalsIgnoreCase(path)) {
+                SpeechHypothesisMessage.handle(body, onHypothesis);
+            } else if (SPEECH_PHRASE.equalsIgnoreCase(path)) {
+                SpeechPhraseMessage.handle(body, onResult);
+            } else if (TURN_END.equalsIgnoreCase(path)) {
+                TurnEndMessage.handle(sender, endLatch);
+            }
+        } catch (Exception e) {
+            onError.accept(e);
         }
     }
 
