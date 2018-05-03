@@ -8,11 +8,13 @@ final class TurnEndMessage {
     private TurnEndMessage() {}
 
     static void handle(MessageSender sender, CountDownLatch turnEndLatch, Runnable onTurnEnd) {
-        if (onTurnEnd != null) {
-            onTurnEnd.run();
+        try {
+            if (onTurnEnd != null) {
+                onTurnEnd.run();
+            }
+        } finally {
+            sender.sendTelemetry();
+            turnEndLatch.countDown();
         }
-
-        sender.sendTelemetry();
-        turnEndLatch.countDown();
     }
 }
