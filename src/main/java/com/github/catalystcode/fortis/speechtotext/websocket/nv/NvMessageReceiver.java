@@ -4,24 +4,30 @@ import com.github.catalystcode.fortis.speechtotext.lifecycle.MessageReceiver;
 import com.github.catalystcode.fortis.speechtotext.telemetry.ConnectionTelemetry;
 import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketAdapter;
+import com.neovisionaries.ws.client.WebSocketCloseCode;
 import com.neovisionaries.ws.client.WebSocketException;
 import com.neovisionaries.ws.client.WebSocketFrame;
 import org.apache.log4j.Logger;
 
+import java.awt.IllegalComponentStateException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.function.Consumer;
 
 class NvMessageReceiver extends WebSocketAdapter {
     private static final Logger log = Logger.getLogger(NvMessageReceiver.class);
     private final CountDownLatch socketCloseLatch;
     private final MessageReceiver receiver;
     private final ConnectionTelemetry telemetry;
+    private final Consumer<Exception> onErrorCallback;
 
-    NvMessageReceiver(CountDownLatch socketCloseLatch, MessageReceiver receiver, ConnectionTelemetry telemetry) {
+    NvMessageReceiver(CountDownLatch socketCloseLatch, MessageReceiver receiver, ConnectionTelemetry telemetry,
+            Consumer<Exception> onError) {
         this.socketCloseLatch = socketCloseLatch;
         this.receiver = receiver;
         this.telemetry = telemetry;
+        this.onErrorCallback = onError;
     }
 
     @Override
@@ -34,6 +40,7 @@ class NvMessageReceiver extends WebSocketAdapter {
     public void onConnectError(WebSocket websocket, WebSocketException exception) throws Exception {
         telemetry.recordConnectionFailed(exception.getMessage());
         log.error("Websocket connection failed", exception);
+        onErrorCallback.accept(exception);
     }
 
     @Override
@@ -45,6 +52,7 @@ class NvMessageReceiver extends WebSocketAdapter {
     public void onError(WebSocket websocket, WebSocketException cause) throws Exception {
         log.error("Websocket read error", cause);
         socketCloseLatch.countDown();
+        onErrorCallback.accept(cause);
     }
 
     @Override
@@ -54,5 +62,9 @@ class NvMessageReceiver extends WebSocketAdapter {
 
         log.info("Websocket closed with status '" + closeCode + "' and reason '" + closeReason + "'");
         socketCloseLatch.countDown();
+        if (closeCode != WebSocketCloseCode.NORMAL) {
+            onErrorCallback.accept(new IllegalComponentStateException(
+                    "Websocket closed with status '" + closeCode + "' and reason '" + closeReason + "'"));
+        }
     }
 }
