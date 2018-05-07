@@ -7,8 +7,14 @@ import java.util.concurrent.CountDownLatch;
 final class TurnEndMessage {
     private TurnEndMessage() {}
 
-    static void handle(MessageSender sender, CountDownLatch turnEndLatch) {
-        sender.sendTelemetry();
-        turnEndLatch.countDown();
+    static void handle(MessageSender sender, CountDownLatch turnEndLatch, Runnable onTurnEnd) {
+        try {
+            if (onTurnEnd != null) {
+                onTurnEnd.run();
+            }
+        } finally {
+            sender.sendTelemetry();
+            turnEndLatch.countDown();
+        }
     }
 }
