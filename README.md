@@ -1,3 +1,7 @@
+**There is now an official [Java SDK for the Bing Speech to Text API](https://docs.microsoft.com/en-us/azure/cognitive-services/speech/getstarted/getstartedjavaandroid) so this repository is deprecated.**
+
+---
+
 A Java implementation of the [Bing Speech to Text API](https://azure.microsoft.com/en-ca/services/cognitive-services/speech/) [websocket protocol](https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/websocketprotocol) ([supporting article](https://www.microsoft.com/developerblog/2017/11/01/building-a-custom-spark-connector-for-near-real-time-speech-to-text-transcription/)).
 
 [![Travis CI status](https://api.travis-ci.org/CatalystCode/SpeechToText-WebSockets-Java.svg?branch=master)](https://travis-ci.org/CatalystCode/SpeechToText-WebSockets-Java)
